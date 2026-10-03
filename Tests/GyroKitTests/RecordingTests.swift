@@ -30,6 +30,15 @@ struct RecordingTests {
 
         #expect(largestError < 2)
         #expect(abs(tracker.snapshot.attitude.roll - -13) < 1.5)
+
+        // The hand holding the Mac also twisted it slightly. Yaw should follow that real
+        // rotation, which integrating the gyroscope's z axis measures independently.
+        let resting = rows.prefix { $0.time < 3 }
+        let zBias = resting.reduce(0) { $0 + $1.rotationRate.z } / Double(resting.count)
+        let twist = zip(rows, rows.dropFirst()).reduce(0) { total, pair in
+            total + (pair.1.rotationRate.z - zBias) * (pair.1.time - pair.0.time)
+        }
+        #expect(abs(tracker.snapshot.attitude.yaw - twist) < 0.5)
     }
 }
 

@@ -2,8 +2,10 @@
 public struct MotionSnapshot: Hashable, Sendable, Codable {
     /// Acceleration including gravity, in g. Lying flat, z reads about −1 g.
     public var acceleration: Vector3 = .zero
-    /// Angular velocity, in degrees per second.
+    /// Angular velocity, in degrees per second, with the learned gyroscope bias removed.
     public var rotationRate: Vector3 = .zero
+    /// Whether the Mac is sitting still. While it is, the orientation estimate holds steady.
+    public var isStill = false
     public var attitude: Attitude = .zero
     /// The same orientation as ``attitude``, as a quaternion from the sensor frame to the world.
     public var orientation: Quaternion = .identity
@@ -16,10 +18,12 @@ public struct MotionSnapshot: Hashable, Sendable, Codable {
 /// Turns a stream of ``MotionSample`` values into ``MotionSnapshot`` updates.
 ///
 /// Gyroscope samples drive the orientation filter; accelerometer samples
-/// supply the gravity reference for the next gyroscope step.
+/// supply the gravity reference for the next gyroscope step. The gyroscope's
+/// bias is learned whenever the Mac is still, which keeps yaw from drifting.
 public struct MotionTracker: Sendable {
     public private(set) var snapshot = MotionSnapshot()
     public var filter: MahonyFilter
+    public var biasEstimator = GyroBiasEstimator()
 
     private var lastGyroTimestamp: Double?
     private var hasAcceleration = false
@@ -41,13 +45,20 @@ public struct MotionTracker: Sendable {
             hasAcceleration = true
 
         case .rotationRate:
-            snapshot.rotationRate = sample.value
             defer { lastGyroTimestamp = sample.timestamp }
-            guard hasAcceleration, let last = lastGyroTimestamp else { return }
+            let dt = lastGyroTimestamp.map { sample.timestamp - $0 } ?? 0
+            guard hasAcceleration, dt > 0, dt < Self.maximumStep else {
+                snapshot.rotationRate = sample.value - biasEstimator.bias
+                return
+            }
 
-            let dt = sample.timestamp - last
-            guard dt > 0, dt < Self.maximumStep else { return }
-            let radiansPerSecond = Vector3(x: sample.value.x.radians, y: sample.value.y.radians, z: sample.value.z.radians)
+            biasEstimator.update(rotationRate: sample.value, acceleration: snapshot.acceleration, dt: dt)
+            snapshot.rotationRate = sample.value - biasEstimator.bias
+            snapshot.isStill = biasEstimator.isStill
+
+            // At rest, any measured rotation is noise. Holding the estimate stops it from wandering.
+            let rate = snapshot.isStill ? .zero : snapshot.rotationRate
+            let radiansPerSecond = Vector3(x: rate.x.radians, y: rate.y.radians, z: rate.z.radians)
             // The accelerometer reports gravity pointing down; the filter wants "up".
             filter.update(rotationRate: radiansPerSecond, acceleration: -snapshot.acceleration, dt: dt)
             snapshot.orientation = filter.orientation

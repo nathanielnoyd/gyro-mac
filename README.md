@@ -67,7 +67,7 @@ then arrive as HID input reports, about 800 per second from each sensor.
 
 Orientation comes from a [Mahony complementary filter](Sources/GyroKit/Fusion/MahonyFilter.swift).
 It integrates the gyroscope and uses gravity from the accelerometer to correct drift.
-Pitch and roll are absolute. There's no magnetometer, so yaw drifts; press `z` in the dashboard to re-zero it.
+Pitch and roll are absolute. There's no magnetometer, so yaw is relative to where you started. To keep it from drifting, [`GyroBiasEstimator`](Sources/GyroKit/Fusion/GyroBiasEstimator.swift) learns the gyroscope's resting bias whenever the Mac sits still, and orientation holds steady while it does. Press `z` in the dashboard to re-zero yaw.
 
 ## Using GyroKit in your own code
 
@@ -91,7 +91,7 @@ for await sample in try MotionSensor().samples() {   // requires root
 Sources/GyroKit/     Sensor access, report decoding and sensor fusion
   IOKit/             Thin wrappers over IOHIDDevice and the I/O Registry
   Sensors/           MotionSensor, LidAngleSensor, SPUSensor
-  Fusion/            MahonyFilter, MotionTracker
+  Fusion/            MahonyFilter, GyroBiasEstimator, MotionTracker
   Math/              Vector3, Quaternion, Attitude
 Sources/gyro/        The command-line tool
 Tests/GyroKitTests/  Unit tests for decoding and fusion

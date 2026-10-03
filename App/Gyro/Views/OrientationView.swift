@@ -14,7 +14,7 @@ struct OrientationView: View {
                 HStack(spacing: 20) {
                     AngleCard(title: "Pitch", detail: "Front edge up is negative", degrees: sensors.motion.attitude.pitch)
                     AngleCard(title: "Roll", detail: "Left side up is positive", degrees: sensors.motion.attitude.roll)
-                    AngleCard(title: "Yaw", detail: "Drifts without a compass", degrees: sensors.motion.attitude.yaw)
+                    AngleCard(title: "Yaw", detail: "Relative to where you started", degrees: sensors.motion.attitude.yaw)
                 }
             }
             .padding(24)
