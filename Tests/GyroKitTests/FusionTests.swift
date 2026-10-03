@@ -3,10 +3,10 @@ import Testing
 @testable import GyroKit
 
 struct FusionTests {
-    @Test func attitudeFromRollQuaternion() {
+    @Test func attitudeFromPitchQuaternion() {
         let attitude = Attitude(Quaternion(angle: 30.radians, axis: Vector3(x: 1, y: 0, z: 0)))
-        #expect(abs(attitude.roll - 30) < 1e-9)
-        #expect(abs(attitude.pitch) < 1e-9)
+        #expect(abs(attitude.pitch - 30) < 1e-9)
+        #expect(abs(attitude.roll) < 1e-9)
         #expect(abs(attitude.yaw) < 1e-9)
     }
 
@@ -15,15 +15,15 @@ struct FusionTests {
     }
 
     @Test(arguments: [-60.0, -15, 0, 20, 45])
-    func filterConvergesToRollFromGravity(roll: Double) {
-        // A MacBook rolled by `roll` sees "up" tilted toward +y.
-        let up = Vector3(x: 0, y: sin(roll.radians), z: cos(roll.radians))
+    func filterConvergesToPitchFromGravity(pitch: Double) {
+        // A MacBook pitched by `pitch` around x sees "up" tilted toward +y.
+        let up = Vector3(x: 0, y: sin(pitch.radians), z: cos(pitch.radians))
         var filter = MahonyFilter(proportionalGain: 2, integralGain: 0)
         for _ in 0..<5_000 {
             filter.update(rotationRate: .zero, acceleration: up, dt: 0.001)
         }
-        #expect(abs(filter.attitude.roll - roll) < 0.5)
-        #expect(abs(filter.attitude.pitch) < 0.5)
+        #expect(abs(filter.attitude.pitch - pitch) < 0.5)
+        #expect(abs(filter.attitude.roll) < 0.5)
     }
 
     @Test func filterIntegratesRotationRate() {
@@ -46,8 +46,8 @@ struct FusionTests {
             tracker.process(MotionSample(kind: .acceleration, value: gravity, timestamp: time))
             tracker.process(MotionSample(kind: .rotationRate, value: gyroBias, timestamp: time))
         }
-        #expect(abs(tracker.snapshot.attitude.roll) < 1)
         #expect(abs(tracker.snapshot.attitude.pitch) < 1)
+        #expect(abs(tracker.snapshot.attitude.roll) < 1)
     }
 
     @Test func trackerIgnoresGapsAfterSleep() {

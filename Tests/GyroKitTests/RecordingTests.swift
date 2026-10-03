@@ -5,9 +5,9 @@ import Testing
 /// Replays real sensor recordings through the fusion pipeline.
 struct RecordingTests {
     /// An M5 Pro MacBook Pro, recorded with `gyro stream -f csv -r 200`: still for 3 s,
-    /// rolled about 20° to one side and back, then pitched about 13° by lifting the front edge.
+    /// front edge lifted to a pitch of about −20° and back, then right side lifted to a roll of about −13°.
     @Test func filterAgreesWithGravityThroughoutTilt() throws {
-        let rows = try Recording.load("tilt-roll-then-pitch")
+        let rows = try Recording.load("tilt-front-then-right")
         var tracker = MotionTracker()
         var largestError = 0.0
 
@@ -19,17 +19,17 @@ struct RecordingTests {
             // (to remove hand jitter) it gives a reference angle.
             let window = rows[max(0, index - 10)...min(rows.count - 1, index + 10)]
             let up = -window.reduce(Vector3.zero) { $0 + $1.acceleration } / Double(window.count)
-            let roll = atan2(up.y, up.z).degrees
-            let pitch = atan2(-up.x, (up.y * up.y + up.z * up.z).squareRoot()).degrees
+            let pitch = atan2(up.y, up.z).degrees
+            let roll = atan2(-up.x, (up.y * up.y + up.z * up.z).squareRoot()).degrees
             largestError = max(
                 largestError,
-                abs(tracker.snapshot.attitude.roll - roll),
-                abs(tracker.snapshot.attitude.pitch - pitch)
+                abs(tracker.snapshot.attitude.pitch - pitch),
+                abs(tracker.snapshot.attitude.roll - roll)
             )
         }
 
         #expect(largestError < 2)
-        #expect(abs(tracker.snapshot.attitude.pitch - -13) < 1.5)
+        #expect(abs(tracker.snapshot.attitude.roll - -13) < 1.5)
     }
 }
 

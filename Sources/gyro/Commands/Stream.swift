@@ -65,7 +65,7 @@ private struct RowWriter {
         return encoder
     }()
 
-    private static let columns = ["time", "ax", "ay", "az", "gx", "gy", "gz", "roll", "pitch", "yaw"]
+    private static let columns = ["time", "ax", "ay", "az", "gx", "gy", "gz", "pitch", "roll", "yaw"]
 
     init(format: Stream.Format) {
         self.format = format
@@ -102,7 +102,7 @@ private struct RowWriter {
             elapsed,
             s.acceleration.x, s.acceleration.y, s.acceleration.z,
             s.rotationRate.x, s.rotationRate.y, s.rotationRate.z,
-            s.attitude.roll, s.attitude.pitch, s.attitude.yaw,
+            s.attitude.pitch, s.attitude.roll, s.attitude.yaw,
         ]
     }
 

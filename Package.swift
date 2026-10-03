@@ -7,6 +7,7 @@ let package = Package(
     platforms: [.macOS("26.0")],
     products: [
         .library(name: "GyroKit", targets: ["GyroKit"]),
+        .library(name: "GyroXPC", targets: ["GyroXPC"]),
         .executable(name: "gyro", targets: ["gyro"]),
     ],
     dependencies: [
@@ -14,6 +15,7 @@ let package = Package(
     ],
     targets: [
         .target(name: "GyroKit"),
+        .target(name: "GyroXPC", dependencies: ["GyroKit"]),
         .executableTarget(
             name: "gyro",
             dependencies: [

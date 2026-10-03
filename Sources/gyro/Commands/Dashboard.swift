@@ -13,7 +13,7 @@ struct Dashboard: AsyncParsableCommand {
 
     func run() async throws {
         let lid = try? LidAngleSensor()
-        let feed = demo ? MotionFeed(samples: DemoMotion.samples()) : try? MotionFeed()
+        let feed = demo ? MotionFeed(samples: SimulatedMotion.samples()) : try? MotionFeed()
         let motionTask = feed.map { feed in Task { await feed.run() } }
         defer { motionTask?.cancel() }
 
@@ -118,7 +118,7 @@ private struct DashboardView {
 
     private var snapshot = MotionSnapshot()
     private var vibrationHistory: [Double] = []
-    private var sampleRate = RateMeter()
+    private var sampleRate = SampleRateMeter()
 
     private static let columnWidth = 38
     private static let gaugeWidth = 19
@@ -180,7 +180,7 @@ private struct DashboardView {
 
     private var attitudeRows: [String] {
         let attitude = snapshot.attitude
-        return [("roll ", attitude.roll), ("pitch", attitude.pitch), ("yaw  ", attitude.yaw)].map { name, degrees in
+        return [("pitch", attitude.pitch), ("roll ", attitude.roll), ("yaw  ", attitude.yaw)].map { name, degrees in
             Style.dim(name) + " "
                 + Gauge.centered(degrees, range: 180, width: Self.gaugeWidth - 4, color: Style.cyan)
                 + " " + String(format: "%+7.1f", degrees)
@@ -213,26 +213,6 @@ private struct DashboardView {
             let leftCell = row < left.count ? left[row] : ""
             let rightCell = row < right.count ? right[row] : ""
             return "  " + leftCell.padded(to: Self.columnWidth) + rightCell
-        }
-    }
-}
-
-/// Measures events per second over windows of about one second.
-private struct RateMeter {
-    private(set) var hertz: Double?
-    private var windowStart: Double?
-    private var count = 0
-
-    mutating func record(_ events: Int, at time: Double) {
-        guard let start = windowStart else {
-            windowStart = time
-            return
-        }
-        count += events
-        if time - start >= 1 {
-            hertz = Double(count) / (time - start)
-            windowStart = time
-            count = 0
         }
     }
 }

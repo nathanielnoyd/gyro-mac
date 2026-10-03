@@ -3,3 +3,5 @@
 .swiftpm/
 *.xcodeproj/xcuserdata/
 DerivedData/
+App/Config/Signing.local.xcconfig
+*.xcworkspace/xcuserdata/

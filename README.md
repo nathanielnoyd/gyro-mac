@@ -67,7 +67,7 @@ then arrive as HID input reports, about 800 per second from each sensor.
 
 Orientation comes from a [Mahony complementary filter](Sources/GyroKit/Fusion/MahonyFilter.swift).
 It integrates the gyroscope and uses gravity from the accelerometer to correct drift.
-Roll and pitch are absolute. There's no magnetometer, so yaw drifts; press `z` in the dashboard to re-zero it.
+Pitch and roll are absolute. There's no magnetometer, so yaw drifts; press `z` in the dashboard to re-zero it.
 
 ## Using GyroKit in your own code
 

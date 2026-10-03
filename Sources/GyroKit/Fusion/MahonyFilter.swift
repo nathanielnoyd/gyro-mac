@@ -4,7 +4,7 @@ import Foundation
 ///
 /// The gyroscope is integrated to track fast rotation, and gravity measured by
 /// the accelerometer slowly pulls the estimate back to correct the gyro's drift.
-/// This fixes roll and pitch; yaw has no absolute reference and will drift.
+/// This fixes pitch and roll; yaw has no absolute reference and will drift.
 ///
 /// Based on R. Mahony, T. Hamel, J.-M. Pflimlin, "Nonlinear Complementary
 /// Filters on the Special Orthogonal Group", IEEE TAC, 2008.
