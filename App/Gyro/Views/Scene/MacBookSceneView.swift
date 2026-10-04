@@ -15,7 +15,8 @@ struct MacBookSceneView: View {
 
             let camera = PerspectiveCamera()
             camera.camera.fieldOfViewInDegrees = 30
-            camera.look(at: [0, 0.05, 0], from: [0, 0.26, 0.5], relativeTo: nil)
+            // A three-quarter view from the front left, like a product shot.
+            camera.look(at: [0, 0.0, 0], from: [-0.56, 0.7, 1.0], relativeTo: nil)
             content.add(camera)
 
             if let environment = try? await StudioLighting.environment() {

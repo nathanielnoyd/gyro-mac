@@ -1,45 +1,5 @@
 import SwiftUI
 
-struct LidView: View {
-    @Environment(SensorModel.self) private var sensors
-
-    var body: some View {
-        Group {
-            if let angle = sensors.lidAngle {
-                VStack(spacing: 28) {
-                    LidDial(angle: angle)
-                        .frame(width: 420, height: 240)
-                    VStack(spacing: 4) {
-                        Text("\(angle.formatted(.number.precision(.fractionLength(0))))°")
-                            .font(.system(size: 64, weight: .semibold, design: .rounded))
-                            .monospacedDigit()
-                            .contentTransition(.numericText(value: angle))
-                            .animation(.snappy, value: angle)
-                        Text(description(for: angle))
-                            .foregroundStyle(.secondary)
-                    }
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-            } else {
-                ContentUnavailableView(
-                    "No Lid Sensor",
-                    systemImage: "laptopcomputer.slash",
-                    description: Text("This Mac doesn't report its lid angle.")
-                )
-            }
-        }
-    }
-
-    private func description(for angle: Double) -> String {
-        switch angle {
-        case ..<1: "Closed"
-        case ..<60: "Barely open"
-        case ..<135: "Open"
-        default: "Wide open"
-        }
-    }
-}
-
 /// A side view of a laptop: the base lies flat and the lid swings up from the hinge,
 /// over a track showing the full range from closed to flat open.
 struct LidDial: View {

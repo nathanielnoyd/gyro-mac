@@ -11,7 +11,7 @@ enum StudioLighting {
 
     /// Lights `entity` and its descendants with the studio environment.
     static func apply(_ environment: EnvironmentResource, to entity: Entity) {
-        entity.components.set(ImageBasedLightComponent(source: .single(environment), intensityExponent: 0.4))
+        entity.components.set(ImageBasedLightComponent(source: .single(environment), intensityExponent: -0.2))
         entity.components.set(ImageBasedLightReceiverComponent(imageBasedLight: entity))
     }
 

@@ -1,0 +1,61 @@
+import SwiftUI
+
+/// Explains why motion needs a helper and walks through installing it.
+struct SetupPanel: View {
+    @Environment(HelperInstaller.self) private var helper
+    @Environment(SensorModel.self) private var sensors
+    @AppStorage("motionSource") private var motionSource = MotionSource.sensors
+
+    var body: some View {
+        GlassPanel(title: "Motion Sensors", systemImage: "gyroscope") {
+            VStack(alignment: .leading, spacing: 14) {
+                Text("Turn on the accelerometer and gyroscope")
+                    .font(.title3.weight(.semibold))
+                Text("macOS only shares them with privileged software, so Gyro includes a small helper that reads them and passes the data to this app. Nothing leaves your Mac.")
+                    .font(.callout)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                if let message {
+                    Label(message, systemImage: "exclamationmark.triangle.fill")
+                        .font(.callout)
+                        .symbolRenderingMode(.multicolor)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+
+                VStack(alignment: .leading, spacing: 8) {
+                    primaryButton
+                        .buttonStyle(.glassProminent)
+                    Button("Use Simulated Motion", systemImage: "wand.and.sparkles") {
+                        motionSource = .simulated
+                    }
+                    .buttonStyle(.glass)
+                }
+                .controlSize(.large)
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var primaryButton: some View {
+        switch helper.state {
+        case .awaitingApproval:
+            Button("Approve in System Settings", systemImage: "gear") {
+                helper.openLoginItemsSettings()
+            }
+        case .notInstalled, .failed, .installed:
+            Button("Install Helper", systemImage: "lock.shield") {
+                helper.install()
+            }
+        }
+    }
+
+    private var message: String? {
+        switch (helper.state, sensors.motionStatus) {
+        case (.awaitingApproval, _): "Turn on Gyro under Login Items › Allow in the Background."
+        case (.failed(let reason), _): reason
+        case (.installed, .failed(let reason)): reason
+        default: nil
+        }
+    }
+}

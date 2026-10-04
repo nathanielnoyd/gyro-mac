@@ -16,7 +16,8 @@ struct GyroApp: App {
                     updateMotion()
                 }
         }
-        .defaultSize(width: 1080, height: 720)
+        .windowStyle(.hiddenTitleBar)
+        .defaultSize(width: 1180, height: 700)
         .commands {
             CommandMenu("Motion") {
                 Button("Zero Yaw", systemImage: "scope") { sensors.resetAttitude() }

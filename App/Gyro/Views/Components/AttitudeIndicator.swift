@@ -1,58 +1,6 @@
 import GyroKit
 import SwiftUI
 
-struct OrientationView: View {
-    @Environment(SensorModel.self) private var sensors
-
-    var body: some View {
-        ScrollView {
-            VStack(spacing: 20) {
-                AttitudeIndicator(attitude: sensors.motion.attitude)
-                    .frame(width: 320, height: 320)
-                    .padding(.top, 12)
-
-                HStack(spacing: 20) {
-                    AngleCard(title: "Pitch", detail: "Front edge up is negative", degrees: sensors.motion.attitude.pitch)
-                    AngleCard(title: "Roll", detail: "Left side up is positive", degrees: sensors.motion.attitude.roll)
-                    AngleCard(title: "Yaw", detail: "Relative to where you started", degrees: sensors.motion.attitude.yaw)
-                }
-            }
-            .padding(24)
-            .frame(maxWidth: .infinity)
-        }
-        .toolbar {
-            ToolbarItem {
-                Button("Zero Yaw", systemImage: "scope") {
-                    sensors.resetAttitude()
-                }
-                .help("Reset the orientation estimate so the current heading becomes zero")
-            }
-        }
-    }
-}
-
-private struct AngleCard: View {
-    let title: String
-    let detail: String
-    let degrees: Double
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text(title)
-                .font(.headline)
-            Text(degrees.signedFormatted(fractionDigits: 1) + "°")
-                .font(.system(size: 30, weight: .semibold, design: .rounded))
-                .monospacedDigit()
-            Text(detail)
-                .font(.caption)
-                .foregroundStyle(.secondary)
-        }
-        .padding(18)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(.fill.quinary, in: .rect(cornerRadius: 20))
-    }
-}
-
 /// An aircraft-style artificial horizon.
 ///
 /// Lifting the front edge moves the horizon down, and lifting one side tilts it the other way,

@@ -27,6 +27,7 @@ final class SensorModel {
     @ObservationIgnored private var streamTask: Task<Void, Never>?
     @ObservationIgnored private var frameTask: Task<Void, Never>?
     @ObservationIgnored private var connectingSince: ContinuousClock.Instant?
+    @ObservationIgnored private var pendingVibration = 0.0
 
     /// If launchd can't start the helper, the connection waits silently instead of failing.
     private static let connectionTimeout = Duration.seconds(5)
@@ -107,9 +108,11 @@ final class SensorModel {
             if sampleRate != rateMeter.hertz {
                 sampleRate = rateMeter.hertz
             }
-            // Charts don't need 60 points a second.
+            // Charts don't need 60 points a second, but keep the strongest shake in between.
+            pendingVibration = max(pendingVibration, update.vibration)
             if frame.isMultiple(of: 2) {
-                history.append(update.snapshot)
+                history.append(update.snapshot, vibration: pendingVibration)
+                pendingVibration = 0
             }
         }
 

@@ -61,10 +61,8 @@ private final class MotionFeed: Sendable {
 
     private struct State {
         var tracker = MotionTracker()
+        var vibration = VibrationMeter()
         var sampleCount = 0
-        var vibration = 0.0
-        /// Slow moving average of total acceleration, so vibration ignores gravity and sensor offset.
-        var restingMagnitude: Double?
     }
 
     private let samples: AsyncStream<MotionSample>
@@ -86,10 +84,7 @@ private final class MotionFeed: Sendable {
                 case .rotationRate:
                     state.sampleCount += 1
                 case .acceleration:
-                    let magnitude = sample.value.magnitude
-                    let resting = state.restingMagnitude.map { $0 + (magnitude - $0) * 0.002 } ?? magnitude
-                    state.restingMagnitude = resting
-                    state.vibration = max(state.vibration, abs(magnitude - resting))
+                    state.vibration.process(acceleration: sample.value)
                 }
             }
         }
@@ -97,11 +92,8 @@ private final class MotionFeed: Sendable {
 
     func takeFrame() -> Frame {
         state.withLock { state in
-            defer {
-                state.sampleCount = 0
-                state.vibration = 0
-            }
-            return Frame(snapshot: state.tracker.snapshot, sampleCount: state.sampleCount, vibration: state.vibration)
+            defer { state.sampleCount = 0 }
+            return Frame(snapshot: state.tracker.snapshot, sampleCount: state.sampleCount, vibration: state.vibration.takePeak())
         }
     }
 

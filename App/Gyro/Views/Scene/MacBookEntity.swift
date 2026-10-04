@@ -1,3 +1,4 @@
+import AppKit
 import GyroKit
 import RealityKit
 import simd
@@ -21,6 +22,7 @@ final class MacBookEntity: Entity {
         super.init()
         buildBase()
         buildLid()
+        buildAxes()
     }
 
     /// Applies the estimated orientation and the lid angle in degrees (0 is closed).
@@ -77,6 +79,36 @@ final class MacBookEntity: Entity {
         )
         display.position = [0, -Size.lidHeight / 2, 0]
         lid.addChild(display)
+    }
+}
+
+// MARK: - Axes
+
+extension MacBookEntity {
+    /// Arrows for the sensor's x, y and z axes, colored like the readings in the panels.
+    /// They are children of the model, so they turn with it.
+    private func buildAxes() {
+        let origin: SIMD3<Float> = [0, Size.baseHeight / 2, 0]
+        // Sensor x is RealityKit +x, sensor y (toward the hinge) is -z, sensor z is +y.
+        addArrow(from: origin, direction: [1, 0, 0], length: Size.width / 2 + 0.07, color: .systemRed)
+        addArrow(from: origin, direction: [0, 0, -1], length: Size.depth / 2 + 0.07, color: .systemGreen)
+        addArrow(from: origin, direction: [0, 1, 0], length: 0.12, color: .systemBlue)
+    }
+
+    private func addArrow(from origin: SIMD3<Float>, direction: SIMD3<Float>, length: Float, color: NSColor) {
+        let material = UnlitMaterial(color: color)
+        let headLength: Float = 0.018
+        let shaft = ModelEntity(mesh: .generateCylinder(height: length - headLength, radius: 0.0022), materials: [material])
+        let head = ModelEntity(mesh: .generateCone(height: headLength, radius: 0.007), materials: [material])
+
+        // Cylinders and cones are built along +y; turn them to face `direction`.
+        let rotation = simd_quatf(from: [0, 1, 0], to: direction)
+        shaft.orientation = rotation
+        head.orientation = rotation
+        shaft.position = origin + direction * (length - headLength) / 2
+        head.position = origin + direction * (length - headLength / 2)
+        addChild(shaft)
+        addChild(head)
     }
 }
 
