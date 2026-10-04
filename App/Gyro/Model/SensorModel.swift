@@ -26,6 +26,10 @@ final class SensorModel {
     @ObservationIgnored private var rateMeter = SampleRateMeter()
     @ObservationIgnored private var streamTask: Task<Void, Never>?
     @ObservationIgnored private var frameTask: Task<Void, Never>?
+    @ObservationIgnored private var connectingSince: ContinuousClock.Instant?
+
+    /// If launchd can't start the helper, the connection waits silently instead of failing.
+    private static let connectionTimeout = Duration.seconds(5)
 
     var hasLidSensor: Bool { lidSensor != nil }
 
@@ -50,6 +54,7 @@ final class SensorModel {
     func startMotion(from source: MotionSource) {
         stopMotion()
         motionStatus = .connecting
+        connectingSince = .now
 
         let buffer = buffer
         streamTask = Task.detached(priority: .userInitiated) { [weak self] in
@@ -87,6 +92,11 @@ final class SensorModel {
     }
 
     private func publishFrame(_ frame: Int) {
+        if motionStatus == .connecting, let connectingSince, connectingSince.duration(to: .now) > Self.connectionTimeout {
+            streamTask?.cancel()
+            motionStatus = .failed("Gyro couldn't reach its helper. Try reinstalling it from Settings.")
+        }
+
         let update = buffer.takeFrame()
         if update.sampleCount > 0, motionStatus != .stopped {
             motion = update.snapshot

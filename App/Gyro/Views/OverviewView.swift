@@ -35,19 +35,20 @@ struct OverviewView: View {
     }
 
     private var hero: some View {
-        MacBookSceneView(
-            orientation: sensors.motion.orientation,
-            lidAngle: sensors.lidAngle ?? 110
-        )
-        .frame(height: 320)
-        .frame(maxWidth: .infinity)
-        .background(.fill.quinary, in: .rect(cornerRadius: 24))
-        .overlay(alignment: .bottom) {
+        VStack(spacing: 0) {
+            MacBookSceneView(
+                orientation: sensors.motion.orientation,
+                lidAngle: sensors.lidAngle ?? 110
+            )
+            .frame(height: showsMotion ? 320 : 240)
+
             if !showsMotion {
                 HelperSetupPrompt()
-                    .padding(16)
+                    .padding([.horizontal, .bottom], 20)
             }
         }
+        .frame(maxWidth: .infinity)
+        .background(.fill.quinary, in: .rect(cornerRadius: 24))
     }
 }
 

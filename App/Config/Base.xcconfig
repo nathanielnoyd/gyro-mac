@@ -12,7 +12,12 @@ CURRENT_PROJECT_VERSION = 1
 COPY_PHASE_STRIP = NO
 
 // Signing. By default the app is signed to run locally (ad hoc).
-// To sign with your own team, create Signing.local.xcconfig next to this file:
+//
+// Ad hoc signing works, but macOS pins the privileged helper to the exact binary
+// it first approved, so after changing the helper it won't start again until you
+// run scripts/reset-helper.sh. Signing with a Team ID (a free Apple Development
+// certificate is enough) avoids this. To use yours, create Signing.local.xcconfig
+// next to this file:
 //
 //     DEVELOPMENT_TEAM = ABCDE12345
 //     CODE_SIGN_IDENTITY = Apple Development

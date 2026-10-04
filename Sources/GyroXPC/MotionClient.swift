@@ -12,7 +12,7 @@ public enum MotionClient {
         public var description: String {
             switch self {
             case .helper(let message): message
-            case .connection(let error): "Lost connection to the helper: \(error.debugDescription)"
+            case .connection: "Gyro couldn't reach its helper. Try reinstalling it from Settings."
             }
         }
     }

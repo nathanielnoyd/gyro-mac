@@ -49,6 +49,21 @@ gyro sensors                   # list what this Mac has
 The accelerometer and gyroscope only report to processes running as root.
 Without `sudo`, the dashboard still shows the lid angle.
 
+## The app
+
+`App/Gyro.xcodeproj` builds **Gyro**, a SwiftUI app with a live 3D model, charts, an
+artificial horizon and a menu bar level. Because the IMU only reports to root, the app
+bundles a small helper daemon (`gyro-helper`) that it installs with `SMAppService`. You
+approve it once in System Settings › General › Login Items, and it streams readings to
+the app over XPC. The helper exits after 30 seconds without clients; launchd starts it
+again on demand.
+
+Open the project in Xcode 26 or later and run the **Gyro** scheme. It signs ad hoc by
+default. That works, but macOS pins the helper to the exact binary it first approved,
+so after changing helper code it won't start until you run `scripts/reset-helper.sh`
+and reinstall it from Settings. Signing with a Team ID avoids this; see
+`App/Config/Base.xcconfig`.
+
 ## How it works
 
 Each SPU sensor is an `AppleSPUHIDDevice` in the I/O Registry, identified by its HID usage:

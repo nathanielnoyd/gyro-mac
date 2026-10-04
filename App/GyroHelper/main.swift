@@ -34,7 +34,6 @@ private func clientRequirement() -> XPCPeerRequirement {
 }
 
 do {
-    log.info("Listening on \(HelperService.machServiceName, privacy: .public)")
     try MotionServer.run(requirement: clientRequirement())
 } catch {
     log.fault("Couldn't start listener: \(error, privacy: .public)")
