@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <g transform="rotate(-24 512 512)">
+    <!-- Spin axis, ending on the outer gimbal. -->
+    <rect x="498" y="182" width="28" height="660" rx="14" fill="#FFC53D"/>
+    <!-- Rotor disc: rim, then top face. -->
+    <ellipse cx="512" cy="530" rx="156" ry="58" fill="#E8930C"/>
+    <rect x="356" y="500" width="312" height="30" fill="#E8930C"/>
+    <ellipse cx="512" cy="500" rx="156" ry="58" fill="#FFC53D"/>
+  </g>
+</svg>
