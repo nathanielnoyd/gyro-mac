@@ -248,22 +248,34 @@ private struct DashboardView {
     // MARK: Status lines
 
     private func header(width: Int) -> String {
-        let title = " " + Style.bold("gyro") + "  " + Style.dim(SystemInfo.modelIdentifier)
+        var title = " " + Style.bold("gyro") + "  " + Style.dim(SystemInfo.modelIdentifier)
 
-        let status: String
+        var status: String
+        var details: [String] = []
         if isPaused {
             status = Style.color(Palette.yellow, "❚❚") + " " + Style.bold("Paused")
         } else {
             switch source {
             case .live, .simulated:
                 let isLive = if case .live = source { true } else { false }
-                let rate = sampleRate.hertz.map { String(format: "%.0f Hz", $0) } ?? "starting"
                 status = Style.color(isLive ? Palette.green : Palette.purple, "●") + " " + Style.bold(isLive ? "Live" : "Simulated")
-                    + Style.dim("  ·  " + rate + "  ·  " + (snapshot.isStill ? "At rest" : "Moving"))
+                details = [sampleRate.hertz.map { String(format: "%.0f Hz", $0) } ?? "starting", snapshot.isStill ? "At rest" : "Moving"]
             case .unavailable:
                 status = Style.color(Palette.yellow, "●") + " " + Style.bold("Lid only")
             }
         }
+
+        // In a narrow terminal, drop details from the right, then the model, so the rest stays readable.
+        func fits() -> Bool {
+            title.visibleWidth + 2 + status.visibleWidth + details.reduce(0) { $0 + 5 + $1.count } + 1 <= width
+        }
+        while !fits(), !details.isEmpty {
+            details.removeLast()
+        }
+        if !fits() {
+            title = " " + Style.bold("gyro")
+        }
+        status += details.map { Style.dim("  ·  " + $0) }.joined()
         return title.padded(to: width - status.visibleWidth - 1) + status + " "
     }
 
