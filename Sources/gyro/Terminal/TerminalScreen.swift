@@ -44,10 +44,19 @@ final class TerminalScreen {
         return Character(UnicodeScalar(byte))
     }
 
-    /// Replaces the screen contents with `lines`.
+    /// The terminal's size in characters, or 80×24 if it can't be read.
+    var size: (columns: Int, rows: Int) {
+        var size = winsize()
+        guard ioctl(STDOUT_FILENO, TIOCGWINSZ, &size) == 0, size.ws_col > 0, size.ws_row > 0 else { return (80, 24) }
+        return (Int(size.ws_col), Int(size.ws_row))
+    }
+
+    /// Replaces the screen contents with `lines`, cut to fit so nothing wraps or scrolls.
     func draw(_ lines: [String]) {
-        let clearToEndOfLine = "\u{1B}[K"
-        let frame = lines.map { $0 + clearToEndOfLine }.joined(separator: "\n")
+        // Clear each line before writing it: clearing after a line that fills the width would erase its last character.
+        let clearLine = "\u{1B}[2K"
+        let (columns, rows) = size
+        let frame = lines.prefix(rows).map { clearLine + $0.truncated(to: columns) }.joined(separator: "\n")
         write("\u{1B}[H" + frame + "\u{1B}[J")
     }
 

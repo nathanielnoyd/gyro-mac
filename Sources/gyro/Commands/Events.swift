@@ -52,7 +52,7 @@ struct Events: AsyncParsableCommand {
 
         let output = try record.map(RecordingFile.init)
         let samples = try MotionSensor().samples(orExplain: "events")
-        print(Style.dim("Listening. Tap, knock or type; press Ctrl-C to stop."))
+        print(Style.color(Palette.green, "●") + " " + Style.bold("Listening") + Style.dim("  Tap, knock or type. Press Ctrl-C to stop."))
         var detector = MotionEventDetector()
         for await sample in samples {
             printer.start(at: sample.timestamp)
@@ -88,22 +88,28 @@ private struct EventPrinter {
 
         let recognitions = recognizer.recognize(event)
         for recognition in recognitions {
-            let name = GesturePreset.named(recognition.id)?.name ?? recognition.id
+            let preset = GesturePreset.named(recognition.id)
+            let name = preset?.name ?? recognition.id
+            let glyph = String(preset?.glyph ?? "●")
             switch recognition.phase {
-            case .tapped: print("\(time)  \(Style.bold(Style.green(name)))")
-            case .began: print("\(time)  \(Style.bold(Style.cyan(name))) began")
-            case .ended: print("\(time)  \(Style.dim(name + " ended"))")
+            case .tapped:
+                let strength = recognition.event[.strength].map(MotionFeature.strength.format) ?? ""
+                print("\(time)  \(Style.color(Palette.cyan, glyph)) \(Style.bold(name.padded(to: 16)))\(Style.dim(strength))")
+            case .began:
+                print("\(time)  \(Style.color(Palette.cyan, glyph)) \(Style.bold(name.padded(to: 16)))\(Style.dim("began"))")
+            case .ended:
+                print("\(time)  \(Style.dim(glyph + " " + name.padded(to: 16) + "ended"))")
             }
         }
 
         guard verbose else { return }
         switch event.kind {
         case .taps:
-            let label = recognitions.isEmpty ? Style.yellow("unrecognized") : ""
-            print("\(time)  \(Style.dim("taps ×\(event.count)")) \(label)\n          \(Style.dim(event.summary))")
+            let label = recognitions.isEmpty ? Style.color(Palette.yellow, "unrecognized") : ""
+            print("\(time)  \(Style.dim("╎ taps ×\(event.count)")) \(label)\n            \(Style.dim(event.summary))")
         case .activity:
             if hasChanged(event) {
-                print("\(time)  \(Style.dim("activity  " + event.summary))")
+                print("\(time)  \(Style.dim("∿ activity  " + event.summary))")
                 lastActivity = event
             }
         }

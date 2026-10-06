@@ -74,7 +74,7 @@ private struct RowWriter {
     func writeHeader() {
         switch format {
         case .table:
-            emit(Style.dim(Self.columns.map { $0.leftPadded(to: 9) }.joined()))
+            emit(Self.columns.enumerated().map { index, column in Self.headerStyle(index)(column.leftPadded(to: 9)) }.joined())
         case .csv:
             emit(Self.columns.joined(separator: ","))
         case .json:
@@ -94,6 +94,15 @@ private struct RowWriter {
             if let data = try? encoder.encode(row) {
                 emit(String(decoding: data, as: UTF8.self))
             }
+        }
+    }
+
+    /// Colors each axis column as the dashboard does, with time and orientation dimmed and cyan.
+    private static func headerStyle(_ index: Int) -> (String) -> String {
+        switch index {
+        case 1...6: { Style.bold(Style.axis((index - 1) % 3, $0)) }
+        case 7...9: { Style.bold(Style.cyan($0)) }
+        default: Style.dim
         }
     }
 

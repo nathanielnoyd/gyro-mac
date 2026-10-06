@@ -7,17 +7,29 @@ Apple doesn't offer a public API for these sensors. They sit behind the
 lid and ambient-light sensing. `gyro` talks to them directly through IOKit.
 
 ```
-  gyro  Mac17,9                                                ●  800 Hz
-
-  ACCELERATION g                        ROTATION °/s
-  x  ─────────┼━─────────  +0.021       x  ─────────┼──────────    -0.4
-  y  ────────━┼──────────  -0.064       y  ─────────┼──────────    +0.2
-  z  ─────────┼━━━━━─────  +0.997       z  ─────────┼──────────    +0.1
-
-  ORIENTATION °                         LID °
-  roll  ───────┼───────    -3.7         ━━━━━━━━━━━────────   105°
-  pitch ───────┼───────    +1.2
-  yaw   ───────┼───────    +0.0
+  gyro  Mac17,9                                  ● Live  ·  800 Hz  ·  At rest
+ ╭─ Acceleration ─────────── 1.000 g ─╮ ╭─ Orientation ─────── z zeroes yaw ─╮
+ │ x  ⠒⠒⠢⠤⣄⣀                  0.000 g │ │                                    │
+ │         ⠈⠉⠓⠲⠤⠤⠖⠋⠉⠉⠉⠉⠉⠉             │ │                    Pitch      0.0° │
+ │ y    ⢀⣠⠴⠒⠒⠒⠒⠦⣄             0.000 g │ │                                    │
+ │    ⠤⠚⠉       ⠈⠙⠒⠒⠒⠒⠒⠒⠒             │ │ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄     Roll       0.0° │
+ │ z     ⢀⣠⠴⠒⠒⠢⢄             -1.000 g │ │ ██████████████                     │
+ │    ⠉⠓⠊⠉      ⠑⠒⠒⠒⠒⠲⠶⠖⠒             │ │  ▀██████████▀      Yaw       +5.3° │
+ ╰────────────────────────────────────╯ │    ▀▀▀▀▀▀▀▀                        │
+ ╭─ Rotation ───────────── ◦ At rest ─╮ ╰────────────────────────────────────╯
+ │ x         ⢀⣀⡰⠒⢄            0.0 °/s │ ╭─ Lid ─────────────────────── Open ─╮
+ │    ⠤⠤⠤⠤⠔⠒⠋⠉    ⠉⠉⠉⠉⠉⠉⠉             │ │         ⡀⡀⣀⡀                       │
+ │ y            ⡴⠲⡄           0.0 °/s │ │     ⠄⠂⠁⠁ ⢠⠂⠉⠙⠢⣄          █▀█ ▀▀█ ° │
+ │    ⠒⠒⠲⠤⠤⠤⠤⠤⠤⠼⠁ ⠉⠉⠉⠉⠉⠉⠉             │ │   ⡐⠈     ⢸    ⠈⠳⡀        █▀█  ▀█   │
+ │ z                          0.0 °/s │ │  ⢐       ⡜      ⢹⡀       ▀▀▀ ▀▀▀   │
+ │    ⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉             │ │  ⡂       ⣇⣀⣀⣀⣀⣀⣀ ⡇                 │
+ ╰────────────────────────────────────╯ ╰────────────────────────────────────╯
+ ╭─ Vibration ─────────────────────────────────────────────────── peak 35 mg ─╮
+ │                                                      ◂⣶                    │
+ │                                                       ⣿               0 mg │
+ │ ⢀⣀⣀⣀⣀⡀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣿⣷⣦⡄⣤⣄⣀⢀⣀⣀⢀          │
+ ╰────────────────────────────────────────────────────────────────────────────╯
+  ◂ Tap Left  24 mg                          space pause   z zero yaw   q quit
 ```
 
 ## Requirements
@@ -62,6 +74,12 @@ gyro sensors                   # list what this Mac has
 
 The accelerometer and gyroscope only report to processes running as root.
 Without `sudo`, the dashboard still shows the lid angle.
+
+The dashboard has the same instruments as the app: a trace of each axis, an artificial
+horizon, the lid angle and a seismograph that marks each gesture it recognizes. It fits
+itself to the terminal window, uses 24-bit color where the terminal supports it, and
+respects [`NO_COLOR`](https://no-color.org). Press space to pause, z to zero the yaw
+and q to quit.
 
 ## The app
 
