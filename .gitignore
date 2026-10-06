@@ -1,7 +1,7 @@
 .DS_Store
 .build/
 .swiftpm/
-*.xcodeproj/xcuserdata/
+**/*.xcodeproj/xcuserdata/
 DerivedData/
 App/Config/Signing.local.xcconfig
-*.xcworkspace/xcuserdata/
+**/*.xcworkspace/xcuserdata/
