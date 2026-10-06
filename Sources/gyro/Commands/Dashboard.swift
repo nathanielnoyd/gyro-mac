@@ -294,7 +294,7 @@ private struct DashboardView {
         } else if let activeActivity, let preset = GesturePreset.named(activeActivity) {
             message = Style.color(Palette.cyan, String(preset.glyph)) + " " + Style.bold(preset.name) + "  " + Style.dim("ongoing")
         } else if showsMotion {
-            message = Style.dim("Tap, knock or type to try a gesture")
+            message = Style.dim("Tap or type to try a gesture")
         }
 
         // When both don't fit, a gesture beats the key hints, and the key hints beat the tip.

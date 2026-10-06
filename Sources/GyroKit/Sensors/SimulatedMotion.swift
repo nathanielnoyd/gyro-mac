@@ -4,7 +4,7 @@ import Foundation
 ///
 /// The simulation repeats every 24 seconds. The MacBook rocks gently, pitching ±20° and
 /// rolling ±10°, then settles on the desk while someone taps its left and right palm rest,
-/// double-taps it, knocks on the desk and types, then starts rocking again.
+/// double-taps it and types, then starts rocking again.
 public enum SimulatedMotion {
     public static func samples(rate: Double = 800) -> AsyncStream<MotionSample> {
         AsyncStream { continuation in
@@ -45,8 +45,6 @@ public enum SimulatedMotion {
             (10.0, .tap(strength: 0.06, rock: Vector3(x: 9, y: 4, z: 0), tailDecay: 0.25)),
             (12.0, .tap(strength: 0.05, rock: Vector3(x: 5, y: 3, z: 0), tailDecay: 0.1)),
             (12.2, .tap(strength: 0.04, rock: Vector3(x: 5, y: 3, z: 0), tailDecay: 0.1)),
-            (14.0, .tap(strength: 0.06, rock: Vector3(x: 1.2, y: 0.8, z: 0), tailDecay: 0.35)),
-            (14.7, .tap(strength: 0.06, rock: Vector3(x: 1.2, y: 0.8, z: 0), tailDecay: 0.35)),
         ]
         // About three seconds of brisk, heavy-handed typing.
         var time = 16.0

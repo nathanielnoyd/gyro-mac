@@ -4,7 +4,7 @@ import GyroKit
 
 struct Events: AsyncParsableCommand {
     static let configuration = CommandConfiguration(
-        abstract: "Recognize taps, knocks, typing and other gestures. Requires sudo.",
+        abstract: "Recognize taps, typing and other gestures. Requires sudo.",
         discussion: """
             Prints each built-in gesture as it's recognized. With --verbose, also prints
             every tap group the detector finds, recognized or not, and changes in ongoing
@@ -52,7 +52,7 @@ struct Events: AsyncParsableCommand {
 
         let output = try record.map(RecordingFile.init)
         let samples = try MotionSensor().samples(orExplain: "events")
-        print(Style.color(Palette.green, "●") + " " + Style.bold("Listening") + Style.dim("  Tap, knock or type. Press Ctrl-C to stop."))
+        print(Style.color(Palette.green, "●") + " " + Style.bold("Listening") + Style.dim("  Tap or type. Press Ctrl-C to stop."))
         var detector = MotionEventDetector()
         for await sample in samples {
             printer.start(at: sample.timestamp)

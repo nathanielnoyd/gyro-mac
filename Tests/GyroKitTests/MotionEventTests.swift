@@ -47,7 +47,8 @@ struct MotionEventDetectorTests {
         #expect(Self.presets.bestMatch(for: tap)?.id == "double-tap")
     }
 
-    @Test func knockingOnTheDeskBarelyTipsTheMac() throws {
+    /// Knocks on the desk aren't a gesture, and mustn't pass for a double tap on the Mac.
+    @Test func knockingOnTheDeskIsNotADoubleTap() throws {
         var mac = SyntheticMac()
         mac.rest(2)
         mac.knock(strength: 0.06)
@@ -57,7 +58,7 @@ struct MotionEventDetectorTests {
         let knock = try #require(mac.events().filter { $0.kind == .taps }.only)
         #expect(knock.count == 2)
         #expect(try #require(knock[.spin]) < log10(3))
-        #expect(Self.presets.bestMatch(for: knock)?.id == "desk-knock")
+        #expect(Self.presets.bestMatch(for: knock) == nil)
     }
 
     @Test func toneFollowsRingingFrequency() throws {
@@ -333,7 +334,7 @@ struct SimulatedGestureTests {
                 }
             }
         }
-        #expect(recognized == ["tap-left", "tap-right", "double-tap", "desk-knock", "hard-typing", "-hard-typing"])
+        #expect(recognized == ["tap-left", "tap-right", "double-tap", "hard-typing", "-hard-typing"])
     }
 }
 

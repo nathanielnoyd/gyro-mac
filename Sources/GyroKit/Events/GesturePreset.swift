@@ -22,6 +22,9 @@ public struct GesturePreset: Identifiable, Hashable, Sendable {
     // and single keystrokes stay under about 3 °/s. That Mac rocked about a diagonal: taps on
     // the left palm rest tipped it to about (−0.8, −0.6) in rock front–back and left–right,
     // taps on the right to about (+0.9, +0.4).
+    //
+    // There's no knock-on-the-desk gesture: in practice knocks and taps on the Mac were
+    // confused too often to be worth triggering anything.
     public static let all: [GesturePreset] = [
         GesturePreset(
             id: "tap-left",
@@ -56,17 +59,6 @@ public struct GesturePreset: Identifiable, Hashable, Sendable {
                 .strength: log10(0.015)...1,
                 .spin: log10(2.4)...log10(12),
                 .length: log10(0.06)...log10(0.28),
-            ])
-        ),
-        GesturePreset(
-            id: "desk-knock",
-            name: "Knock on Desk",
-            symbol: "door.left.hand.closed",
-            instructions: "Knock twice on the desk beside the Mac, then pause.",
-            signature: GestureSignature(kind: .taps, count: 2, ranges: [
-                .strength: log10(0.015)...1,
-                .spin: log10(0.6)...log10(3.4),
-                .length: log10(0.24)...log10(0.6),
             ])
         ),
         GesturePreset(

@@ -65,7 +65,7 @@ sudo gyro                      # live dashboard of every sensor
 sudo gyro stream               # print readings as a table
 sudo gyro stream -f csv -d 10 > motion.csv
 sudo gyro stream -f json | jq .attitude
-sudo gyro events -v            # recognize taps, knocks and typing, with their features
+sudo gyro events -v            # recognize taps and typing, with their features
 sudo gyro calibrate            # walk through each gesture and fit them to your Mac
 gyro events --replay taps.csv  # replay a recording through the detector, no sudo needed
 gyro lid --watch               # lid angle, no sudo needed
@@ -109,8 +109,8 @@ the readings into two kinds of events:
 - **Activity**: a summary of the last 1.5 seconds, four times a second: jolts per
   second, their strength, overall vibration, how much of it is low rumble, and turning.
 
-A gesture is a range for each of those features. Gyro ships with eight: Tap Left, Tap
-Right, Double Tap, Knock on Desk, Soft Typing, Hard Typing, Shake the Desk and Pick Up.
+A gesture is a range for each of those features. Gyro ships with seven: Tap Left, Tap
+Right, Double Tap, Soft Typing, Hard Typing, Shake the Desk and Pick Up.
 Their starting ranges were measured on one M5 Pro MacBook Pro on one desk, so calibrate
 them for yours: **Motion › Calibrate Gestures…** in the app, or `sudo gyro calibrate`
 in the terminal. Both walk through each gesture in turn (instructions, a countdown,

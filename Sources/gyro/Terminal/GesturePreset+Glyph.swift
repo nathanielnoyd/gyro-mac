@@ -7,7 +7,6 @@ extension GesturePreset {
         case "tap-left": "◂"
         case "tap-right": "▸"
         case "double-tap": "◆"
-        case "desk-knock": "■"
         case "soft-typing": "∴"
         case "hard-typing": "≡"
         case "desk-shake": "≈"
