@@ -1,0 +1,27 @@
+name: Bug report
+description: Something in gyro, Gyro.app or GyroKit doesn't work as described.
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you ran or did, what you expected, and what happened instead.
+    validations:
+      required: true
+  - type: input
+    id: model
+    attributes:
+      label: Mac and macOS version
+      description: e.g. "MacBook Pro 14-inch, M5 Pro, macOS 26.1".
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: gyro version
+      description: The output of `gyro --version`, or the commit you built.
+  - type: textarea
+    id: logs
+    attributes:
+      label: Output or logs
+      render: text

@@ -1,5 +1,9 @@
 # gyro
 
+[![CI](https://github.com/nathanielnoyd/gyro-mac/actions/workflows/ci.yml/badge.svg)](https://github.com/nathanielnoyd/gyro-mac/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+![macOS 26+](https://img.shields.io/badge/macOS-26%2B-lightgrey.svg)
+
 Read the accelerometer, gyroscope and lid angle sensor hidden inside Apple Silicon MacBooks.
 
 Apple doesn't offer a public API for these sensors. They sit behind the
@@ -40,22 +44,13 @@ lid and ambient-light sensing. `gyro` talks to them directly through IOKit.
 
 ## Install
 
-With [Homebrew](https://brew.sh):
-
-```bash
-brew install nathanielnoyd/tap/gyro
-```
-
-Homebrew builds `gyro` from source, so it needs Xcode 26 or later. Shell completions
-for zsh, bash and fish are installed too.
-
-Or build it yourself:
+Build it from source:
 
 ```bash
 git clone https://github.com/nathanielnoyd/gyro-mac.git
 cd gyro-mac
 swift build -c release
-cp .build/release/gyro /usr/local/bin/
+sudo cp .build/release/gyro /usr/local/bin/
 ```
 
 ## Usage
@@ -95,6 +90,10 @@ default. That works, but macOS pins the helper to the exact binary it first appr
 so after changing helper code it won't start until you run `scripts/reset-helper.sh`
 and reinstall it from Settings. Signing with a Team ID avoids this; see
 `App/Config/Base.xcconfig`.
+
+Signing with a Team ID is also more secure. A team-signed helper only talks to an app
+signed by the same team. An ad hoc helper can only check the app's signing identifier,
+which any program on your Mac could claim, so it could read the motion sensors too.
 
 ## Gestures
 
@@ -176,14 +175,24 @@ Sources/GyroKit/     Sensor access, report decoding and sensor fusion
   Fusion/            MahonyFilter, GyroBiasEstimator, MotionTracker
   Events/            MotionEventDetector, GestureSignature, GestureRecognizer, presets
   Math/              Vector3, Quaternion, Attitude
+Sources/GyroXPC/     The XPC interface between the app and its helper
 Sources/gyro/        The command-line tool
 Tests/GyroKitTests/  Unit tests for decoding, fusion and event detection
+App/                 The Gyro app (Gyro/) and its privileged helper (GyroHelper/)
+scripts/             Development scripts
 ```
 
 ## Caveats
 
 These are undocumented interfaces discovered through reverse engineering.
 They may change or disappear in any macOS update. Use at your own risk.
+
+## Contributing
+
+Reports from Macs other than the M5 Pro MacBook Pro are the most useful thing right now:
+[file a hardware report](https://github.com/nathanielnoyd/gyro-mac/issues/new?template=hardware-report.yml).
+For code, see [CONTRIBUTING.md](CONTRIBUTING.md). To report a security problem, see
+[SECURITY.md](SECURITY.md).
 
 ## Credits
 
