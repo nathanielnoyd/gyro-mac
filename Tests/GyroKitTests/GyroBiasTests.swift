@@ -27,6 +27,19 @@ struct GyroBiasTests {
         #expect(abs(tracker.snapshot.attitude.yaw) > 5)
     }
 
+    @Test func resetKeepsThresholds() {
+        var tracker = MotionTracker()
+        tracker.biasEstimator.settleTime = 2
+        tracker.biasEstimator.rotationThreshold = 1.5
+        var sensor = SimulatedIMU(bias: restingBias, gravity: restingGravity)
+        sensor.run(seconds: 10, into: &tracker)
+
+        tracker.biasEstimator.reset()
+        #expect(tracker.biasEstimator.bias == .zero)
+        #expect(tracker.biasEstimator.settleTime == 2)
+        #expect(tracker.biasEstimator.rotationThreshold == 1.5)
+    }
+
     @Test func realRotationIsNotAbsorbedIntoBias() {
         var tracker = MotionTracker()
         var sensor = SimulatedIMU(bias: restingBias, gravity: restingGravity)

@@ -54,10 +54,13 @@ final class HIDDevice: Sendable {
     /// their reference without leaking the callback context.
     func startInputReports(maxLength: Int, handler: @escaping ReportHandler) throws(GyroError) {
         try open()
-        try state.withLock { state throws(GyroError) in
-            guard state == .open else { return }
+        let starting = state.withLock { state in
+            guard state == .open else { return false }
             state = .streaming
+            return true
         }
+        // Already streaming, or cancelled.
+        guard starting else { return }
 
         let context = ReportContext(handler: handler, maxLength: maxLength)
         let retainedContext = Unmanaged.passRetained(context)

@@ -19,6 +19,9 @@ struct Dashboard: AsyncParsableCommand {
     var demo = false
 
     func run() async throws {
+        guard isatty(STDIN_FILENO) != 0, isatty(STDOUT_FILENO) != 0 else {
+            throw CLIError(description: "The dashboard needs a terminal. To save or pipe readings, use gyro stream.")
+        }
         let lid = try? LidAngleSensor()
         let feed = demo ? MotionFeed(samples: SimulatedMotion.samples()) : try? MotionFeed()
         let motionTask = feed.map { feed in Task { await feed.run() } }

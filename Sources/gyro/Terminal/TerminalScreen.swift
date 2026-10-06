@@ -24,6 +24,11 @@ final class TerminalScreen {
 
         write("\u{1B}[?1049h\u{1B}[?25l")
         isActive = true
+
+        // Ctrl-C arrives as a key, but kill and a closed terminal arrive as signals.
+        savedAttributes = originalAttributes
+        signal(SIGTERM, restoreAndExit)
+        signal(SIGHUP, restoreAndExit)
     }
 
     deinit {
@@ -63,6 +68,17 @@ final class TerminalScreen {
     private func write(_ text: String) {
         FileHandle.standardOutput.write(Data(text.utf8))
     }
+}
+
+/// The terminal settings to put back from a signal handler, which can't reach the screen object.
+nonisolated(unsafe) private var savedAttributes = termios()
+
+/// Restores the terminal and exits, using only async-signal-safe calls.
+private func restoreAndExit(_ signal: Int32) {
+    let reset = "\u{1B}[?25h\u{1B}[?1049l"
+    _ = reset.withCString { Darwin.write(STDOUT_FILENO, $0, strlen($0)) }
+    tcsetattr(STDIN_FILENO, TCSAFLUSH, &savedAttributes)
+    _exit(128 + signal)
 }
 
 extension Character {

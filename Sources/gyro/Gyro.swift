@@ -4,7 +4,7 @@ import ArgumentParser
 struct Gyro: AsyncParsableCommand {
     static let configuration = CommandConfiguration(
         commandName: "gyro",
-        abstract: "Read the motion, lid and light sensors built into Apple Silicon MacBooks.",
+        abstract: "Read the motion and lid angle sensors built into Apple Silicon MacBooks.",
         discussion: """
             The accelerometer and gyroscope only report to root, so commands that
             read them need sudo. The lid angle sensor works without it.

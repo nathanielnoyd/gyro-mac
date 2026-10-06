@@ -147,8 +147,10 @@ public struct MotionEventDetector: Sendable {
         bucket.rotationCount += 1
 
         let reading = Reading(time: time, value: fast)
-        if jolt != nil {
-            jolt?.rotation.append(reading)
+        if let current = jolt {
+            if !current.isSustained {
+                jolt?.rotation.append(reading)
+            }
         } else {
             rotationNoise += (fast.magnitude - rotationNoise) * Self.weight(dt, Smoothing.rotationNoise)
             Self.remember(reading, in: &recentRotation)
@@ -242,7 +244,11 @@ public struct MotionEventDetector: Sendable {
         }
 
         mutating func add(_ reading: Reading, level: Double, threshold: Double, maximumLength: Double) {
-            acceleration.append(reading)
+            // A sustained jolt is discarded when it ends, so stop keeping its readings;
+            // otherwise carrying the Mac around would grow them without limit.
+            if !isSustained {
+                acceleration.append(reading)
+            }
             peak = max(peak, level)
             if level > max(threshold / 2, peak * MotionEventDetector.releaseFraction) {
                 lastLoud = reading.time

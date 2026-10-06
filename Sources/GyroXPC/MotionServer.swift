@@ -19,6 +19,9 @@ public enum MotionServer {
             requirement: requirement
         ) { request in
             let client = MotionClientConnection(id: clients.nextID())
+            // Registered before accepting, so a cancellation that arrives straight
+            // away can't run before the add and leave the client registered forever.
+            clients.add(client.id)
             let (decision, session) = request.accept(
                 incomingMessageHandler: { (request: HelperRequest) -> (any Encodable)? in
                     client.handle(request)
@@ -30,7 +33,6 @@ public enum MotionServer {
                 }
             )
             client.attach(session)
-            clients.add(client.id)
             return decision
         }
 

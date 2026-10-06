@@ -33,7 +33,10 @@ struct GestureStore {
         } catch CocoaError.fileReadNoSuchFile {
             // Nothing saved yet.
         } catch {
-            log.error("Couldn't read saved gestures: \(error.localizedDescription, privacy: .public)")
+            // Move the file aside so the next save doesn't overwrite the user's gestures.
+            let backup = directory.appending(path: "Gestures-unreadable-\(GestureCalibration.stamp(for: .now)).json")
+            try? FileManager.default.moveItem(at: fileURL, to: backup)
+            log.error("Couldn't read saved gestures, moved them to \(backup.lastPathComponent, privacy: .public): \(error.localizedDescription, privacy: .public)")
         }
 
         let presets = GesturePreset.all.map { preset in

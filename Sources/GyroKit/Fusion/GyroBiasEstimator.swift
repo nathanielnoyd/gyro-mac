@@ -56,7 +56,13 @@ public struct GyroBiasEstimator: Sendable {
         bias += corrected * (dt / min(learningDuration, memory))
     }
 
+    /// Forgets the learned bias and stillness, keeping the thresholds.
     public mutating func reset() {
-        self = GyroBiasEstimator()
+        var fresh = GyroBiasEstimator()
+        fresh.rotationThreshold = rotationThreshold
+        fresh.accelerationTolerance = accelerationTolerance
+        fresh.settleTime = settleTime
+        fresh.memory = memory
+        self = fresh
     }
 }

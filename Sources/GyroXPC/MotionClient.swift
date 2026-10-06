@@ -45,7 +45,12 @@ public enum MotionClient {
         continuation.onTermination = { _ in
             session.cancel(reason: "The app stopped reading motion.")
         }
-        try session.send(HelperRequest.startMotion)
+        do {
+            try session.send(HelperRequest.startMotion)
+        } catch {
+            session.cancel(reason: "Couldn't ask the helper for motion.")
+            throw error
+        }
         return stream
     }
 }

@@ -7,10 +7,11 @@ struct MacBookSceneView: View {
     let orientation: Quaternion
     let lidAngle: Double
 
-    @State private var macBook = MacBookEntity()
-
     var body: some View {
         RealityView { content in
+            // Built here, once, rather than as a `@State` default value, which SwiftUI
+            // would evaluate (meshes and all) every time it recreates this view.
+            let macBook = MacBookEntity()
             content.add(macBook)
 
             let camera = PerspectiveCamera()
@@ -28,8 +29,9 @@ struct MacBookSceneView: View {
             key.light.intensity = 400
             key.look(at: .zero, from: [0.4, 0.8, 0.6], relativeTo: nil)
             content.add(key)
-        } update: { _ in
-            macBook.apply(orientation: orientation, lidAngle: lidAngle)
+        } update: { content in
+            let macBook = content.entities.lazy.compactMap { $0 as? MacBookEntity }.first
+            macBook?.apply(orientation: orientation, lidAngle: lidAngle)
         }
         .accessibilityLabel("3D model of the MacBook")
     }

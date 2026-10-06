@@ -52,7 +52,9 @@ struct Events: AsyncParsableCommand {
 
         let output = try record.map(RecordingFile.init)
         let samples = try MotionSensor().samples(orExplain: "events")
-        print(Style.color(Palette.green, "●") + " " + Style.bold("Listening") + Style.dim("  Tap or type. Press Ctrl-C to stop."))
+        // On stderr, so it stays out of piped output.
+        let banner = Style.color(Palette.green, "●") + " " + Style.bold("Listening") + Style.dim("  Tap or type. Press Ctrl-C to stop.")
+        FileHandle.standardError.write(Data((banner + "\n").utf8))
         var detector = MotionEventDetector()
         for await sample in samples {
             printer.start(at: sample.timestamp)
@@ -132,6 +134,7 @@ private final class RecordingFile {
     init(path: String) throws {
         let url = URL(fileURLWithPath: path)
         try Data((MotionRecording.csvHeader + "\n").utf8).write(to: url)
+        InvokingUser.giveOwnership(of: url)
         handle = try FileHandle(forWritingTo: url)
         handle.seekToEndOfFile()
     }
