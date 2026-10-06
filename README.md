@@ -28,6 +28,17 @@ lid and ambient-light sensing. `gyro` talks to them directly through IOKit.
 
 ## Install
 
+With [Homebrew](https://brew.sh):
+
+```bash
+brew install nathanielnoyd/tap/gyro
+```
+
+Homebrew builds `gyro` from source, so it needs Xcode 26 or later. Shell completions
+for zsh, bash and fish are installed too.
+
+Or build it yourself:
+
 ```bash
 git clone https://github.com/nathanielnoyd/gyro-mac.git
 cd gyro-mac
