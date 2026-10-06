@@ -10,6 +10,8 @@ public enum GyroError: Error, Equatable, Sendable {
     case malformedReport(SPUSensor)
     /// An IOKit call failed.
     case ioKit(operation: String, code: IOReturn)
+    /// A motion recording has a line GyroKit could not read.
+    case invalidRecording(line: Int)
 }
 
 extension GyroError: CustomStringConvertible {
@@ -23,6 +25,8 @@ extension GyroError: CustomStringConvertible {
             "The \(sensor.displayName.lowercased()) returned an unexpected report."
         case .ioKit(let operation, let code):
             "\(operation) failed: \(String(cString: mach_error_string(code))) (0x\(String(UInt32(bitPattern: code), radix: 16)))"
+        case .invalidRecording(let line):
+            "Line \(line) of the recording isn't a motion reading."
         }
     }
 }

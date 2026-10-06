@@ -20,6 +20,8 @@ final class SensorModel {
     private(set) var motionStatus = MotionStatus.stopped
     private(set) var sampleRate: Double?
     private(set) var lidAngle: Double?
+    /// Where motion is coming from, while it streams or is about to.
+    private(set) var source: MotionSource?
 
     @ObservationIgnored private let buffer = MotionBuffer()
     @ObservationIgnored private let lidSensor = try? LidAngleSensor()
@@ -28,6 +30,9 @@ final class SensorModel {
     @ObservationIgnored private var frameTask: Task<Void, Never>?
     @ObservationIgnored private var connectingSince: ContinuousClock.Instant?
     @ObservationIgnored private var pendingVibration = 0.0
+
+    /// Receives taps and activity summaries as they're detected, on the main actor.
+    @ObservationIgnored var eventHandler: (([MotionEvent]) -> Void)?
 
     /// If launchd can't start the helper, the connection waits silently instead of failing.
     private static let connectionTimeout = Duration.seconds(5)
@@ -54,6 +59,7 @@ final class SensorModel {
 
     func startMotion(from source: MotionSource) {
         stopMotion()
+        self.source = source
         motionStatus = .connecting
         connectingSince = .now
 
@@ -75,6 +81,7 @@ final class SensorModel {
         streamTask?.cancel()
         streamTask = nil
         buffer.reset()
+        source = nil
         motionStatus = .stopped
         motion = MotionSnapshot()
         history.removeAll()
@@ -85,6 +92,16 @@ final class SensorModel {
     /// Re-zeroes the orientation estimate. Mostly useful for yaw, which drifts.
     func resetAttitude() {
         buffer.resetAttitude()
+    }
+
+    /// Starts keeping raw readings, including the last couple of seconds, for a recording.
+    func startCapture() {
+        buffer.startCapture()
+    }
+
+    /// Stops keeping raw readings and returns them.
+    func finishCapture() -> MotionRecording {
+        MotionRecording(samples: buffer.finishCapture())
     }
 
     private func motionFailed(_ error: any Error) {
@@ -114,6 +131,9 @@ final class SensorModel {
                 history.append(update.snapshot, vibration: pendingVibration)
                 pendingVibration = 0
             }
+        }
+        if !update.events.isEmpty, motionStatus == .streaming {
+            eventHandler?(update.events)
         }
 
         if frame.isMultiple(of: 4), let lidSensor {

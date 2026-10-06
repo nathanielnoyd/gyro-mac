@@ -53,6 +53,9 @@ sudo gyro                      # live dashboard of every sensor
 sudo gyro stream               # print readings as a table
 sudo gyro stream -f csv -d 10 > motion.csv
 sudo gyro stream -f json | jq .attitude
+sudo gyro events -v            # recognize taps, knocks and typing, with their features
+sudo gyro calibrate            # walk through each gesture and fit them to your Mac
+gyro events --replay taps.csv  # replay a recording through the detector, no sudo needed
 gyro lid --watch               # lid angle, no sudo needed
 gyro sensors                   # list what this Mac has
 ```
@@ -74,6 +77,41 @@ default. That works, but macOS pins the helper to the exact binary it first appr
 so after changing helper code it won't start until you run `scripts/reset-helper.sh`
 and reinstall it from Settings. Signing with a Team ID avoids this; see
 `App/Config/Base.xcconfig`.
+
+## Gestures
+
+The IMU feels more than tilt. A tap on the palm rest rings the chassis for a few
+tens of milliseconds and tips the Mac by a fraction of a degree; typing is a stream of
+small jolts; a wobbling desk is a slow rumble. GyroKit's `MotionEventDetector` turns
+the readings into two kinds of events:
+
+- **Taps**: up to four quick jolts with quiet before and after, described by their
+  strength, which way the Mac tipped (left or right, front or back), the direction of
+  the first push, how long and how high the chassis rang, and how many there were.
+- **Activity**: a summary of the last 1.5 seconds, four times a second: jolts per
+  second, their strength, overall vibration, how much of it is low rumble, and turning.
+
+A gesture is a range for each of those features. Gyro ships with eight: Tap Left, Tap
+Right, Double Tap, Knock on Desk, Soft Typing, Hard Typing, Shake the Desk and Pick Up.
+Their starting ranges were measured on one M5 Pro MacBook Pro on one desk, so calibrate
+them for yours: **Motion › Calibrate Gestures…** in the app, or `sudo gyro calibrate`
+in the terminal. Both walk through each gesture in turn (instructions, a countdown,
+then five taps or eight seconds of motion) and refit every gesture to what your Mac,
+desk and hands actually produce. A calibration from the terminal is picked up by the
+app the next time it opens or comes to the front. To add examples to a single gesture,
+pick it in **Motion › Gestures…** (⌘G) and record more; **New Gesture** records your own. Each gesture page
+plots the latest event against its ranges, live, which is a good way to explore what
+the sensors can tell apart.
+
+Each gesture can play a sound, show a notification, run a shortcut, open a URL or run
+a shell script (with `$GYRO_GESTURE`, `$GYRO_TAPS` and `$GYRO_STRENGTH_MG` set). Every
+recognition is also posted as the distributed notification
+`io.github.nathanielnoyd.gyro.gesture`. Actions only run for the real sensors, never
+simulated motion.
+
+Gestures are saved in `~/Library/Application Support/Gyro`, along with each calibration
+(`Calibrations/`) and the raw readings behind every set of examples (`Recordings/`), in
+the CSV format `gyro events --replay` reads.
 
 ## How it works
 
@@ -118,9 +156,10 @@ Sources/GyroKit/     Sensor access, report decoding and sensor fusion
   IOKit/             Thin wrappers over IOHIDDevice and the I/O Registry
   Sensors/           MotionSensor, LidAngleSensor, SPUSensor
   Fusion/            MahonyFilter, GyroBiasEstimator, MotionTracker
+  Events/            MotionEventDetector, GestureSignature, GestureRecognizer, presets
   Math/              Vector3, Quaternion, Attitude
 Sources/gyro/        The command-line tool
-Tests/GyroKitTests/  Unit tests for decoding and fusion
+Tests/GyroKitTests/  Unit tests for decoding, fusion and event detection
 ```
 
 ## Caveats

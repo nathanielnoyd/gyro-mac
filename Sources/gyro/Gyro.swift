@@ -10,7 +10,7 @@ struct Gyro: AsyncParsableCommand {
             read them need sudo. The lid angle sensor works without it.
             """,
         version: "0.1.0",
-        subcommands: [Dashboard.self, Stream.self, Lid.self, Sensors.self],
+        subcommands: [Dashboard.self, Stream.self, Events.self, Calibrate.self, Lid.self, Sensors.self],
         defaultSubcommand: Dashboard.self
     )
 }
