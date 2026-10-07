@@ -24,23 +24,29 @@ public enum MotionClient {
             bufferingPolicy: .bufferingNewest(8_192)
         )
 
-        let session = try XPCSession(
-            machService: HelperService.machServiceName,
-            incomingMessageHandler: { (event: HelperEvent) -> (any Encodable)? in
-                switch event {
-                case .motion(let samples):
-                    for sample in samples {
-                        continuation.yield(sample)
+        let session: XPCSession
+        do {
+            session = try XPCSession(
+                machService: HelperService.machServiceName,
+                incomingMessageHandler: { (event: HelperEvent) -> (any Encodable)? in
+                    switch event {
+                    case .motion(let samples):
+                        for sample in samples {
+                            continuation.yield(sample)
+                        }
+                    case .failure(let message):
+                        continuation.finish(throwing: Failure.helper(message))
                     }
-                case .failure(let message):
-                    continuation.finish(throwing: Failure.helper(message))
+                    return nil
+                },
+                cancellationHandler: { error in
+                    continuation.finish(throwing: Failure.connection(error))
                 }
-                return nil
-            },
-            cancellationHandler: { error in
-                continuation.finish(throwing: Failure.connection(error))
-            }
-        )
+            )
+        } catch let error as XPCRichError {
+            // launchd has no helper loaded to connect to.
+            throw Failure.connection(error)
+        }
 
         continuation.onTermination = { _ in
             session.cancel(reason: "The app stopped reading motion.")
@@ -49,7 +55,7 @@ public enum MotionClient {
             try session.send(HelperRequest.startMotion)
         } catch {
             session.cancel(reason: "Couldn't ask the helper for motion.")
-            throw error
+            throw (error as? XPCRichError).map(Failure.connection) ?? error
         }
         return stream
     }

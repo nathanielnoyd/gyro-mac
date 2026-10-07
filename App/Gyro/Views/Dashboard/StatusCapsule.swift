@@ -48,7 +48,7 @@ struct StatusCapsule: View {
         case .stopped: "Motion off"
         case .connecting: "Connecting…"
         case .streaming: motionSource == .simulated ? "Simulated" : "Live"
-        case .failed: "Motion unavailable"
+        case .unreachable, .failed: "Motion unavailable"
         }
     }
 
@@ -57,7 +57,7 @@ struct StatusCapsule: View {
         case .stopped: .secondary
         case .connecting: .yellow
         case .streaming: motionSource == .simulated ? .purple : .green
-        case .failed: .red
+        case .unreachable, .failed: .red
         }
     }
 }

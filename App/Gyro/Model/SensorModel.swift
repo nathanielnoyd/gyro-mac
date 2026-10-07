@@ -1,5 +1,9 @@
 import GyroKit
+import GyroXPC
 import Observation
+import os
+
+private let log = Logger(subsystem: HelperService.appBundleIdentifier, category: "motion")
 
 /// Live sensor state for the whole app.
 ///
@@ -12,6 +16,8 @@ final class SensorModel {
         case stopped
         case connecting
         case streaming
+        /// The helper is installed, but launchd didn't start it or the connection dropped.
+        case unreachable
         case failed(String)
     }
 
@@ -81,6 +87,8 @@ final class SensorModel {
                 }
             } catch is CancellationError {
                 return
+            } catch MotionClient.Failure.connection {
+                await self?.motionUnreachable()
             } catch {
                 await self?.motionFailed(error)
             }
@@ -114,8 +122,15 @@ final class SensorModel {
         MotionRecording(samples: buffer.finishCapture())
     }
 
+    private func motionUnreachable() {
+        guard !Task.isCancelled else { return }
+        log.notice("Couldn't reach the helper")
+        motionStatus = .unreachable
+    }
+
     private func motionFailed(_ error: any Error) {
         guard !Task.isCancelled else { return }
+        log.error("Motion failed: \(String(describing: error), privacy: .public)")
         motionStatus = .failed(String(describing: error))
     }
 
@@ -123,7 +138,8 @@ final class SensorModel {
     private func publishFrame(_ frame: Int) -> Duration? {
         if motionStatus == .connecting, let connectingSince, connectingSince.duration(to: .now) > Self.connectionTimeout {
             streamTask?.cancel()
-            motionStatus = .failed("Gyro couldn't reach its helper. Try reinstalling it from Settings.")
+            log.notice("The helper didn't answer within \(Self.connectionTimeout, privacy: .public)")
+            motionStatus = .unreachable
         }
 
         let update = buffer.takeFrame()

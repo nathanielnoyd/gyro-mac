@@ -43,11 +43,18 @@ struct SetupPanel: View {
             Button("Approve in System Settings", systemImage: "gear") {
                 helper.openLoginItemsSettings()
             }
+        case .installed where sensors.motionStatus == .unreachable && helper.repair < .unloaded:
+            Button("Repair Helper", systemImage: "wrench.and.screwdriver") {
+                Task { await helper.repairWithAdministratorPrivileges() }
+            }
         case .installed:
             // The helper is in place but motion didn't start, so try connecting again.
             Button("Try Again", systemImage: "arrow.clockwise") {
                 sensors.startMotion(from: .sensors)
             }
+        case .repairing:
+            Button("Repairing Helper…", systemImage: "wrench.and.screwdriver") {}
+                .disabled(true)
         case .notInstalled, .failed:
             Button("Install Helper", systemImage: "lock.shield") {
                 helper.install()
@@ -60,6 +67,10 @@ struct SetupPanel: View {
         case (.awaitingApproval, _): "Turn on Gyro under Login Items › Allow in the Background."
         case (.failed(let reason), _): reason
         case (.installed, .failed(let reason)): reason
+        case (.installed, .unreachable) where helper.repair < .unloaded:
+            "Gyro's helper is installed but won't start. Repairing it asks for an administrator password."
+        case (.installed, .unreachable):
+            "Gyro's helper still won't start. If restarting your Mac doesn't help, run “sudo sfltool resetbtm” in Terminal, restart and install the helper again. That also asks you to approve other apps' background items again."
         default: nil
         }
     }

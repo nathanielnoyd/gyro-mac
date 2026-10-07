@@ -26,6 +26,12 @@ struct GyroApp: App {
                 .task(id: MotionTrigger(source: motionSource, helper: helper.state)) {
                     updateMotion()
                 }
+                .task(id: sensors.motionStatus) {
+                    // Re-registering fixes most helpers that won't start, without a password.
+                    if sensors.motionStatus == .unreachable {
+                        await helper.reregister()
+                    }
+                }
         }
         .windowStyle(.hiddenTitleBar)
         .defaultSize(width: 1180, height: 700)

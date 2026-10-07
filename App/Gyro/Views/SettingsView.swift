@@ -25,6 +25,9 @@ struct SettingsView: View {
                         Button("Open Login Items") { helper.openLoginItemsSettings() }
                     case .notInstalled, .failed:
                         Button("Install") { helper.install() }
+                    case .repairing:
+                        ProgressView()
+                            .controlSize(.small)
                     }
                 }
             }
@@ -40,6 +43,7 @@ struct SettingsView: View {
         case .installed: "Installed"
         case .awaitingApproval: "Waiting for approval"
         case .notInstalled: "Not installed"
+        case .repairing: "Repairing…"
         case .failed(let reason): reason
         }
     }

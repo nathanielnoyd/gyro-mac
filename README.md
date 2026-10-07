@@ -89,9 +89,16 @@ again on demand.
 
 Open the project in Xcode 26 or later and run the **Gyro** scheme. It signs ad hoc by
 default. That works, but macOS pins the helper to the exact binary it first approved,
-so after changing helper code it won't start until you run `scripts/reset-helper.sh`
-and reinstall it from Settings. Signing with a Team ID avoids this; see
+so after changing helper code it won't start. Signing with a Team ID avoids this; see
 `App/Config/Base.xcconfig`.
+
+When the app can't reach its helper, it registers it again on its own. If that isn't
+enough, it offers **Repair Helper**, which asks for an administrator password to unload
+the stale helper (what `scripts/reset-helper.sh` does) and registers it again. Rarely,
+macOS loses track of which copy of the app a helper belongs to, usually after builds
+are moved or deleted, and refuses to start or replace it. Only resetting its list of
+background items clears that: run `sudo sfltool resetbtm`, restart, and install the
+helper again. This also asks you to approve other apps' background items again.
 
 Because the motion sensors can reveal what you type, the helper only streams to the
 Gyro app. A team-signed helper checks that the app comes from the same team. An ad hoc
