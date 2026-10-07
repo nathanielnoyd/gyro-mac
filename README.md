@@ -78,6 +78,8 @@ and q to quit.
 
 ## The app
 
+![Gyro's dashboard: traces of each axis, a 3D MacBook, an artificial horizon, the lid angle and a seismograph marking each recognized gesture](docs/app.png)
+
 `App/Gyro.xcodeproj` builds **Gyro**, a SwiftUI app with a live 3D model, charts, an
 artificial horizon and a menu bar level. Because the IMU only reports to root, the app
 bundles a small helper daemon (`gyro-helper`) that it installs with `SMAppService`. You
@@ -180,6 +182,7 @@ Sources/gyro/        The command-line tool
 Tests/GyroKitTests/  Unit tests for decoding, fusion and event detection
 App/                 The Gyro app (Gyro/) and its privileged helper (GyroHelper/)
 scripts/             Development scripts
+docs/                Images for this README
 ```
 
 ## Caveats
