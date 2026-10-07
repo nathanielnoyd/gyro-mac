@@ -91,9 +91,9 @@ so after changing helper code it won't start until you run `scripts/reset-helper
 and reinstall it from Settings. Signing with a Team ID avoids this; see
 `App/Config/Base.xcconfig`.
 
-Signing with a Team ID is also more secure. A team-signed helper only talks to an app
-signed by the same team. An ad hoc helper can only check the app's signing identifier,
-which any program on your Mac could claim, so it could read the motion sensors too.
+Because the motion sensors can reveal what you type, the helper only streams to the
+Gyro app. A team-signed helper checks that the app comes from the same team. An ad hoc
+helper has no team to check, so it only accepts the exact app it was shipped inside.
 
 ## Gestures
 
