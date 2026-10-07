@@ -38,7 +38,7 @@ lid and ambient-light sensing. `gyro` talks to them directly through IOKit.
 
 ## Requirements
 
-- An Apple Silicon MacBook (tested on an M5 Pro MacBook Pro; reports from other models welcome)
+- An Apple Silicon MacBook (tested on an M5 Pro MacBook Pro)
 - macOS 26 or later
 - Swift 6.2 or later (Xcode 26+)
 
@@ -189,13 +189,7 @@ docs/                Images for this README
 
 These are undocumented interfaces discovered through reverse engineering.
 They may change or disappear in any macOS update. Use at your own risk.
-
-## Contributing
-
-Reports from Macs other than the M5 Pro MacBook Pro are the most useful thing right now:
-[file a hardware report](https://github.com/nathanielnoyd/gyro-mac/issues/new?template=hardware-report.yml).
-For code, see [CONTRIBUTING.md](CONTRIBUTING.md). To report a security problem, see
-[SECURITY.md](SECURITY.md).
+To report a security problem, see [SECURITY.md](SECURITY.md).
 
 ## Credits
 
