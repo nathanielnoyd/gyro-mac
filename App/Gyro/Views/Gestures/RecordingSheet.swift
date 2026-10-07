@@ -22,7 +22,7 @@ struct RecordingSheet: View {
                 }
 
                 if session.gestureID == nil {
-                    TextField("Name", text: Binding(get: { session.name }, set: gestures.renameSession))
+                    TextField("Name", text: Binding(get: { session.name }, set: { gestures.renameSession($0) }))
                         .textFieldStyle(.roundedBorder)
                         .frame(maxWidth: 280)
                 }
