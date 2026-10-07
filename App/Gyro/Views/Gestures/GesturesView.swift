@@ -116,6 +116,21 @@ struct GesturesView: View {
     }
 }
 
+extension View {
+    /// Tells the user when gestures, recordings or calibrations couldn't be saved.
+    func gestureSaveErrorAlert(_ gestures: GestureModel) -> some View {
+        alert(
+            "Couldn't Save Gestures",
+            isPresented: Binding(get: { gestures.saveError != nil }, set: { if !$0 { gestures.saveError = nil } }),
+            presenting: gestures.saveError
+        ) { _ in
+            Button("OK") {}
+        } message: { message in
+            Text(message)
+        }
+    }
+}
+
 /// A gesture in the sidebar, which lights up whenever the gesture is recognized.
 private struct GestureRow: View {
     @Environment(GestureModel.self) private var gestures

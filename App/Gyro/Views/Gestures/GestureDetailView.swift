@@ -37,11 +37,7 @@ struct GestureDetailView: View {
         let gesture = binding(gesture)
         return Section {
             HStack(spacing: 14) {
-                Image(systemName: gesture.wrappedValue.symbol)
-                    .font(.system(size: 26, weight: .medium))
-                    .foregroundStyle(.white)
-                    .frame(width: 52, height: 52)
-                    .background(Color.accentColor.gradient, in: .rect(cornerRadius: 13))
+                GestureIcon(symbol: gesture.wrappedValue.symbol)
                 VStack(alignment: .leading, spacing: 3) {
                     if gesture.wrappedValue.isCustom {
                         TextField("Name", text: gesture.name)

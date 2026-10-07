@@ -30,12 +30,21 @@ nonisolated final class MotionBuffer: Sendable {
         var events: [MotionEvent] = []
         var recent: [MotionSample] = []
         var capture: [MotionSample]?
+        /// Bumped by every reset, so readings still in flight from a previous source can be told apart.
+        var session = 0
     }
 
     private let state = Mutex(State())
 
-    func process(_ sample: MotionSample) {
+    /// The current session, to pass to ``process(_:session:)``.
+    var session: Int {
+        state.withLock { $0.session }
+    }
+
+    /// Folds in a reading, unless it belongs to a session that has since been reset.
+    func process(_ sample: MotionSample, session: Int) {
         state.withLock { state in
+            guard state.session == session else { return }
             state.tracker.process(sample)
             switch sample.kind {
             case .acceleration: state.vibration.process(acceleration: sample.value)
@@ -99,6 +108,6 @@ nonisolated final class MotionBuffer: Sendable {
 
     /// Forgets everything, for example when switching to a different source.
     func reset() {
-        state.withLock { $0 = State() }
+        state.withLock { $0 = State(session: $0.session + 1) }
     }
 }

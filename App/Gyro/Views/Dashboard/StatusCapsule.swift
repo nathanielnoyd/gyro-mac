@@ -3,7 +3,7 @@ import SwiftUI
 /// A floating capsule at the bottom of the stage: where data comes from, how fast, and whether the Mac is moving.
 struct StatusCapsule: View {
     @Environment(SensorModel.self) private var sensors
-    @AppStorage("motionSource") private var motionSource = MotionSource.sensors
+    @AppStorage(MotionSource.storageKey) private var motionSource = MotionSource.sensors
 
     var body: some View {
         HStack(spacing: 14) {

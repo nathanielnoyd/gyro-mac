@@ -122,7 +122,7 @@ struct CalibrationSheet: View {
             .frame(maxHeight: .infinity)
 
             if !sensors.isMotionLive {
-                motionOffWarning
+                MotionOffWarning()
             }
         }
     }
@@ -139,7 +139,7 @@ struct CalibrationSheet: View {
                 : "Keep it up for \(Int(GestureCalibration.activityDuration)) seconds, until the bar fills.")
                 .foregroundStyle(.secondary)
             if !sensors.isMotionLive {
-                motionOffWarning
+                MotionOffWarning()
             }
         }
     }
@@ -180,13 +180,13 @@ struct CalibrationSheet: View {
                     .font(.callout)
                     .foregroundStyle(.secondary)
             }
+            ForEach(session.failures, id: \.self) { failure in
+                Label(failure, systemImage: "exclamationmark.triangle.fill")
+                    .symbolRenderingMode(.multicolor)
+                    .font(.callout)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
         }
-    }
-
-    private var motionOffWarning: some View {
-        Label("Motion sensors are off. Turn them on in the main window.", systemImage: "exclamationmark.triangle.fill")
-            .symbolRenderingMode(.multicolor)
-            .font(.callout)
     }
 
     private func selection(_ id: String) -> Binding<Bool> {
@@ -204,11 +204,7 @@ private struct GestureTitle: View {
 
     var body: some View {
         VStack(spacing: 8) {
-            Image(systemName: gesture.symbol)
-                .font(.system(size: 30, weight: .medium))
-                .foregroundStyle(.white)
-                .frame(width: 60, height: 60)
-                .background(Color.accentColor.gradient, in: .rect(cornerRadius: 15))
+            GestureIcon(symbol: gesture.symbol, size: 60)
             Text(gesture.name)
                 .font(.title2.weight(.semibold))
         }

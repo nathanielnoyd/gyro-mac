@@ -36,6 +36,7 @@ final class SensorModel {
 
     /// If launchd can't start the helper, the connection waits silently instead of failing.
     private static let connectionTimeout = Duration.seconds(5)
+    private static let frameInterval = Duration.milliseconds(16)
 
     var hasLidSensor: Bool { lidSensor != nil }
 
@@ -45,15 +46,20 @@ final class SensorModel {
     }
 
     /// Starts the frame loop, which also polls the lid angle.
+    ///
+    /// While motion is off, the loop slows to the lid's polling rate, and ends if there's no lid
+    /// sensor either. ``startMotion(from:)`` starts it again.
     func start() {
         guard frameTask == nil else { return }
         frameTask = Task { [weak self] in
             var frame = 0
             while !Task.isCancelled {
-                self?.publishFrame(frame)
+                // Ends once the model is gone, or there's nothing left to update.
+                guard let interval = self?.publishFrame(frame) else { break }
                 frame += 1
-                try? await Task.sleep(for: .milliseconds(16))
+                try? await Task.sleep(for: interval)
             }
+            self?.frameTask = nil
         }
     }
 
@@ -62,12 +68,16 @@ final class SensorModel {
         self.source = source
         motionStatus = .connecting
         connectingSince = .now
+        start()
 
+        // Readings the previous source's task delivers before it notices it was cancelled
+        // carry an older session, so the buffer drops them.
         let buffer = buffer
+        let session = buffer.session
         streamTask = Task.detached(priority: .userInitiated) { [weak self] in
             do {
                 for try await sample in try source.samples() {
-                    buffer.process(sample)
+                    buffer.process(sample, session: session)
                 }
             } catch is CancellationError {
                 return
@@ -109,7 +119,8 @@ final class SensorModel {
         motionStatus = .failed(String(describing: error))
     }
 
-    private func publishFrame(_ frame: Int) {
+    /// Publishes one frame, and returns how long to wait before the next, or `nil` to stop.
+    private func publishFrame(_ frame: Int) -> Duration? {
         if motionStatus == .connecting, let connectingSince, connectingSince.duration(to: .now) > Self.connectionTimeout {
             streamTask?.cancel()
             motionStatus = .failed("Gyro couldn't reach its helper. Try reinstalling it from Settings.")
@@ -136,11 +147,15 @@ final class SensorModel {
             eventHandler?(update.events)
         }
 
-        if frame.isMultiple(of: 4), let lidSensor {
+        // Every frame while idle, since those come four times slower.
+        if frame.isMultiple(of: 4) || !isMotionLive, let lidSensor {
             let angle = try? lidSensor.angle()
             if angle != lidAngle {
                 lidAngle = angle
             }
         }
+
+        if isMotionLive { return Self.frameInterval }
+        return lidSensor == nil ? nil : Self.frameInterval * 4
     }
 }

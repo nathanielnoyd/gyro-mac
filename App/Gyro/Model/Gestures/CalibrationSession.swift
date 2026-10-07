@@ -36,6 +36,8 @@ final class CalibrationSession {
     /// What each gesture's examples are recognized as, once fitted. Filled in for the summary.
     private(set) var results: [String: [String?]] = [:]
     private(set) var calibration = GestureCalibration()
+    /// Steps left out of the calibration because their recording couldn't be saved.
+    private(set) var failures: [String] = []
 
     var current: Gesture? { steps.indices.contains(index) ? steps[index] : nil }
 
@@ -124,8 +126,13 @@ final class CalibrationSession {
         guard let gesture = current else { return }
         let end = sensors.motion.timestamp
         let raw = sensors.finishCapture()
-        if !examples.isEmpty, let file = try? store.save(raw, for: gesture.presetID ?? "custom") {
-            calibration.sections.append(.init(gesture: gesture.id, recording: file, start: start, end: end, examples: examples))
+        if !examples.isEmpty {
+            do {
+                let file = try store.save(raw, for: gesture.presetID ?? "custom")
+                calibration.sections.append(.init(gesture: gesture.id, recording: file, start: start, end: end, examples: examples))
+            } catch {
+                failures.append("\(gesture.name) wasn't calibrated: its recording couldn't be saved. \(error.localizedDescription)")
+            }
         }
 
         phase = .settling
@@ -140,8 +147,7 @@ final class CalibrationSession {
         if index < steps.count {
             phase = .ready
         } else {
-            let candidates = available.map { GestureRecognizer.Candidate(id: $0.id, signature: $0.signature, tolerance: $0.tolerance) }
-            results = calibration.check(against: candidates)
+            results = calibration.check(against: available.map(\.candidate))
             phase = .summary
         }
     }

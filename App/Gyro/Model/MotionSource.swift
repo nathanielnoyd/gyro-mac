@@ -8,6 +8,9 @@ enum MotionSource: String, CaseIterable, Identifiable {
     /// Generated readings, for demos and Macs without an IMU.
     case simulated
 
+    /// The user's choice, in `@AppStorage`.
+    static let storageKey = "motionSource"
+
     var id: Self { self }
 
     var title: String {

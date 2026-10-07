@@ -42,9 +42,7 @@ struct RecordingSheet: View {
                 LevelMeter(vibration: sensors.history.points.last?.vibration ?? 0)
 
                 if !sensors.isMotionLive {
-                    Label("Motion sensors are off. Turn them on in the main window.", systemImage: "exclamationmark.triangle.fill")
-                        .symbolRenderingMode(.multicolor)
-                        .font(.callout)
+                    MotionOffWarning()
                 }
 
                 HStack {
@@ -72,6 +70,29 @@ struct RecordingSheet: View {
     private func title(_ session: GestureModel.RecordingSession) -> String {
         if session.gestureID != nil { return "Record \(session.name)" }
         return session.kind == .taps ? "New Tap Gesture" : "New Ongoing Gesture"
+    }
+}
+
+/// Shown while recording if there's no motion to record.
+struct MotionOffWarning: View {
+    var body: some View {
+        Label("Motion sensors are off. Turn them on in the main window.", systemImage: "exclamationmark.triangle.fill")
+            .symbolRenderingMode(.multicolor)
+            .font(.callout)
+    }
+}
+
+/// A gesture's symbol on an accent-colored tile.
+struct GestureIcon: View {
+    let symbol: String
+    var size: CGFloat = 52
+
+    var body: some View {
+        Image(systemName: symbol)
+            .font(.system(size: size / 2, weight: .medium))
+            .foregroundStyle(.white)
+            .frame(width: size, height: size)
+            .background(Color.accentColor.gradient, in: .rect(cornerRadius: size / 4))
     }
 }
 

@@ -69,7 +69,7 @@ struct GesturesButton: View {
 
     var body: some View {
         Button {
-            openWindow(id: "gestures")
+            openWindow(id: WindowID.gestures)
         } label: {
             HStack(spacing: 7) {
                 Image(systemName: "hand.tap")

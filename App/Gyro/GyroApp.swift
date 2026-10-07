@@ -5,7 +5,7 @@ struct GyroApp: App {
     @State private var sensors: SensorModel
     @State private var gestures: GestureModel
     @State private var helper = HelperInstaller()
-    @AppStorage("motionSource") private var motionSource = MotionSource.sensors
+    @AppStorage(MotionSource.storageKey) private var motionSource = MotionSource.sensors
 
     init() {
         let sensors = SensorModel()
@@ -16,11 +16,12 @@ struct GyroApp: App {
     }
 
     var body: some Scene {
-        Window("Gyro", id: "main") {
+        Window("Gyro", id: WindowID.main) {
             ContentView()
                 .environment(sensors)
                 .environment(gestures)
                 .environment(helper)
+                .gestureSaveErrorAlert(gestures)
                 .task { sensors.start() }
                 .task(id: MotionTrigger(source: motionSource, helper: helper.state)) {
                     updateMotion()
@@ -43,10 +44,11 @@ struct GyroApp: App {
             }
         }
 
-        Window("Gestures", id: "gestures") {
+        Window("Gestures", id: WindowID.gestures) {
             GesturesView()
                 .environment(sensors)
                 .environment(gestures)
+                .gestureSaveErrorAlert(gestures)
         }
         .windowStyle(.titleBar)
         .defaultSize(width: 940, height: 640)
@@ -85,13 +87,19 @@ private struct OpenGesturesButton: View {
     @Environment(\.openWindow) private var openWindow
 
     var body: some View {
-        Button("Gestures…", systemImage: "hand.tap") { openWindow(id: "gestures") }
+        Button("Gestures…", systemImage: "hand.tap") { openWindow(id: WindowID.gestures) }
             .keyboardShortcut("g", modifiers: .command)
         Button("Calibrate Gestures…", systemImage: "dot.scope") {
-            openWindow(id: "gestures")
+            openWindow(id: WindowID.gestures)
             gestures.startCalibration()
         }
     }
+}
+
+/// The app's windows, for `openWindow`.
+enum WindowID {
+    static let main = "main"
+    static let gestures = "gestures"
 }
 
 /// Everything that decides whether, and from where, motion should stream.

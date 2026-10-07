@@ -1,4 +1,4 @@
-import Foundation
+import AppKit
 import GyroKit
 import Observation
 
@@ -63,6 +63,8 @@ final class GestureModel {
     private(set) var calibration: CalibrationSession?
     /// When the gestures were last calibrated, in the app or with `gyro calibrate`.
     private(set) var lastCalibrated: Date?
+    /// Why the last save failed, until the user dismisses it.
+    var saveError: String?
 
     /// Whether recognized gestures run their actions.
     var runsActions: Bool {
@@ -79,9 +81,14 @@ final class GestureModel {
     @ObservationIgnored private var recognizer = GestureRecognizer()
     @ObservationIgnored private var sessionTask: Task<Void, Never>?
     @ObservationIgnored private var appliedCalibrations: Set<String>
+    /// A save waiting for edits to settle.
+    @ObservationIgnored private var pendingSave: Task<Void, Never>?
+    @ObservationIgnored private var terminationObserver: (any NSObjectProtocol)?
 
     private static let runsActionsKey = "runsGestureActions"
     private static let logLength = 60
+    /// How long edits must pause before they're written, so typing doesn't save on every keystroke.
+    private static let saveDelay = Duration.milliseconds(500)
 
     init(sensors: SensorModel, store: GestureStore = .standard) {
         self.sensors = sensors
@@ -92,6 +99,18 @@ final class GestureModel {
         runsActions = UserDefaults.standard.object(forKey: Self.runsActionsKey) as? Bool ?? true
         updateRecognizer()
         importCalibrations()
+        terminationObserver = NotificationCenter.default.addObserver(
+            forName: NSApplication.willTerminateNotification, object: nil, queue: .main
+        ) { [weak self] _ in
+            MainActor.assumeIsolated { self?.flushPendingSave() }
+        }
+    }
+
+    isolated deinit {
+        flushPendingSave()
+        if let terminationObserver {
+            NotificationCenter.default.removeObserver(terminationObserver)
+        }
     }
 
     func gesture(_ id: String?) -> Gesture? {
@@ -157,10 +176,23 @@ final class GestureModel {
 
     // MARK: - Editing
 
+    /// Applies an edit right away, and saves it once edits pause.
     func update(_ gesture: Gesture) {
         guard let index = gestures.firstIndex(where: { $0.id == gesture.id }) else { return }
         guard gestures[index] != gesture else { return }
         gestures[index] = gesture
+        updateRecognizer()
+        pendingSave?.cancel()
+        pendingSave = Task { [weak self] in
+            try? await Task.sleep(for: Self.saveDelay)
+            guard !Task.isCancelled else { return }
+            self?.save()
+        }
+    }
+
+    /// Writes edits still waiting to be saved.
+    func flushPendingSave() {
+        guard pendingSave != nil else { return }
         save()
     }
 
@@ -172,6 +204,8 @@ final class GestureModel {
         gesture.recordings.removeAll()
         gesture.refit()
         update(gesture)
+        // The saved gestures must stop using the recordings before they're deleted.
+        flushPendingSave()
         store.delete(recordings, keepingThoseUsedBy: gestures)
     }
 
@@ -192,14 +226,18 @@ final class GestureModel {
     }
 
     private func save() {
-        store.save(GestureStore.Contents(gestures: gestures, appliedCalibrations: appliedCalibrations))
+        pendingSave?.cancel()
+        pendingSave = nil
         updateRecognizer()
+        do {
+            try store.save(GestureStore.Contents(gestures: gestures, appliedCalibrations: appliedCalibrations))
+        } catch {
+            saveError = "Your changes are kept while Gyro is open, but couldn't be written to disk. \(error.localizedDescription)"
+        }
     }
 
     private func updateRecognizer() {
-        recognizer.candidates = gestures.filter(\.isEnabled).map {
-            GestureRecognizer.Candidate(id: $0.id, signature: $0.signature, tolerance: $0.tolerance)
-        }
+        recognizer.candidates = gestures.filter(\.isEnabled).map(\.candidate)
         if let activeActivity, recognizer.activeActivity != activeActivity {
             self.activeActivity = nil
         }
@@ -215,10 +253,7 @@ final class GestureModel {
 
     /// Starts recording examples of a new gesture.
     func startRecordingNewGesture(of kind: MotionEvent.Kind) {
-        let instructions = kind == .taps
-            ? "Perform your gesture, then pause for a moment. Repeat it a few times."
-            : "Do it continuously until the recording ends."
-        startSession(RecordingSession(gestureID: nil, kind: kind, name: "", instructions: instructions, phase: .finished))
+        startSession(RecordingSession(gestureID: nil, kind: kind, name: "", instructions: Gesture.instructions(for: kind), phase: .finished))
     }
 
     private func startSession(_ session: RecordingSession) {
@@ -293,8 +328,11 @@ final class GestureModel {
         }
 
         gesture.examples += session.examples
-        if let file = try? store.save(raw, for: gesture.presetID ?? "custom") {
+        do {
+            let file = try store.save(raw, for: gesture.presetID ?? "custom")
             gesture.recordings.append(GestureRecording(file: file, examplesFrom: start, examplesUntil: end))
+        } catch {
+            saveError = "The examples were saved, but not the raw recording, so they can't be measured again if Gyro's detector changes. \(error.localizedDescription)"
         }
         gesture.refit()
         if let index = gestures.firstIndex(where: { $0.id == gesture.id }) {
@@ -318,13 +356,14 @@ final class GestureModel {
         self.calibration = nil
         let result = calibration.finish()
         guard save, !result.sections.isEmpty else {
-            store.delete(result.sections.map { GestureRecording(file: $0.recording, examplesFrom: $0.start, examplesUntil: $0.end) }, keepingThoseUsedBy: gestures)
+            store.delete(result.sections.map(GestureRecording.init), keepingThoseUsedBy: gestures)
             return
         }
         do {
             try result.save(in: store.directory)
         } catch {
-            // The gestures are still fitted below; only the history entry is lost.
+            // The gestures are still fitted below; only the calibration's record is lost.
+            saveError = "The gestures were calibrated, but the calibration's record couldn't be saved. \(error.localizedDescription)"
         }
         apply(result)
     }
@@ -344,7 +383,7 @@ final class GestureModel {
         for section in calibration.sections {
             guard let index = gestures.firstIndex(where: { $0.id == section.gesture }) else { continue }
             gestures[index].examples = section.examples
-            gestures[index].recordings = [GestureRecording(file: section.recording, examplesFrom: section.start, examplesUntil: section.end)]
+            gestures[index].recordings = [GestureRecording(section)]
             if calibration.detectorVersion == MotionEventDetector.version {
                 gestures[index].refit()
             } else {

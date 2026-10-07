@@ -45,7 +45,7 @@ struct GestureStore {
         return Contents(gestures: presets + saved.filter(\.isCustom), appliedCalibrations: applied)
     }
 
-    func save(_ contents: Contents) {
+    func save(_ contents: Contents) throws {
         do {
             try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
             let encoder = JSONEncoder()
@@ -54,6 +54,7 @@ struct GestureStore {
             try data.write(to: fileURL, options: .atomic)
         } catch {
             log.error("Couldn't save gestures: \(error.localizedDescription, privacy: .public)")
+            throw error
         }
     }
 

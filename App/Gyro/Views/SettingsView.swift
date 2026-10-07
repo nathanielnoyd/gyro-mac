@@ -2,7 +2,7 @@ import SwiftUI
 
 struct SettingsView: View {
     @Environment(HelperInstaller.self) private var helper
-    @AppStorage("motionSource") private var motionSource = MotionSource.sensors
+    @AppStorage(MotionSource.storageKey) private var motionSource = MotionSource.sensors
 
     var body: some View {
         Form {

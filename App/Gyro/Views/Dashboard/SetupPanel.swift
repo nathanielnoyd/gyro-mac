@@ -4,7 +4,7 @@ import SwiftUI
 struct SetupPanel: View {
     @Environment(HelperInstaller.self) private var helper
     @Environment(SensorModel.self) private var sensors
-    @AppStorage("motionSource") private var motionSource = MotionSource.sensors
+    @AppStorage(MotionSource.storageKey) private var motionSource = MotionSource.sensors
 
     var body: some View {
         GlassPanel(title: "Motion Sensors", systemImage: "gyroscope") {
@@ -43,7 +43,12 @@ struct SetupPanel: View {
             Button("Approve in System Settings", systemImage: "gear") {
                 helper.openLoginItemsSettings()
             }
-        case .notInstalled, .failed, .installed:
+        case .installed:
+            // The helper is in place but motion didn't start, so try connecting again.
+            Button("Try Again", systemImage: "arrow.clockwise") {
+                sensors.startMotion(from: .sensors)
+            }
+        case .notInstalled, .failed:
             Button("Install Helper", systemImage: "lock.shield") {
                 helper.install()
             }

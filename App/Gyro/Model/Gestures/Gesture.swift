@@ -39,11 +39,37 @@ struct Gesture: Codable, Identifiable, Hashable {
         id = UUID().uuidString
         self.name = name
         symbol = kind == .taps ? "hand.tap" : "waveform.path"
-        instructions = kind == .taps
-            ? "Perform the gesture, then pause for a moment before the next one."
-            : "Keep it up until the recording ends."
+        instructions = Self.instructions(for: kind)
         self.signature = signature
         self.examples = examples
+    }
+
+    /// Fields added after the first release keep their defaults when an older file lacks them.
+    init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(String.self, forKey: .id)
+        name = try container.decode(String.self, forKey: .name)
+        symbol = try container.decode(String.self, forKey: .symbol)
+        instructions = try container.decode(String.self, forKey: .instructions)
+        presetID = try container.decodeIfPresent(String.self, forKey: .presetID)
+        signature = try container.decode(GestureSignature.self, forKey: .signature)
+        examples = try container.decodeIfPresent([MotionEvent].self, forKey: .examples) ?? examples
+        recordings = try container.decodeIfPresent([GestureRecording].self, forKey: .recordings) ?? recordings
+        tolerance = try container.decodeIfPresent(Double.self, forKey: .tolerance) ?? tolerance
+        isEnabled = try container.decodeIfPresent(Bool.self, forKey: .isEnabled) ?? isEnabled
+        actions = try container.decodeIfPresent([GestureAction].self, forKey: .actions) ?? actions
+    }
+
+    /// What to do while recording examples of a new gesture.
+    static func instructions(for kind: MotionEvent.Kind) -> String {
+        kind == .taps
+            ? "Perform the gesture, then pause for a moment before the next one."
+            : "Keep it up until the recording ends."
+    }
+
+    /// How the recognizer sees the gesture.
+    var candidate: GestureRecognizer.Candidate {
+        GestureRecognizer.Candidate(id: id, signature: signature, tolerance: tolerance)
     }
 
     /// Refits the signature to the examples, or restores the preset's when there are none.
@@ -63,6 +89,13 @@ struct GestureRecording: Codable, Hashable {
     /// The stretch of the recording, on the sensor clock, that examples come from.
     var examplesFrom: Double
     var examplesUntil: Double
+}
+
+extension GestureRecording {
+    /// The recording a calibration section was measured from.
+    init(_ section: GestureCalibration.Section) {
+        self.init(file: section.recording, examplesFrom: section.start, examplesUntil: section.end)
+    }
 }
 
 /// Something to do when a gesture is recognized.

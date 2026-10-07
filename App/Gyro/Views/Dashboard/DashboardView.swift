@@ -5,7 +5,7 @@ import SwiftUI
 struct DashboardView: View {
     @Environment(SensorModel.self) private var sensors
     @Environment(GestureModel.self) private var gestures
-    @AppStorage("motionSource") private var motionSource = MotionSource.sensors
+    @AppStorage(MotionSource.storageKey) private var motionSource = MotionSource.sensors
 
     private static let panelWidth: CGFloat = 330
 

@@ -51,11 +51,11 @@ struct MenuBarView: View {
 
             HStack {
                 Button("Gestures") {
-                    openWindow(id: "gestures")
+                    openWindow(id: WindowID.gestures)
                     NSApp.activate()
                 }
                 Button("Open Gyro") {
-                    openWindow(id: "main")
+                    openWindow(id: WindowID.main)
                     NSApp.activate()
                 }
                 Spacer()
