@@ -44,7 +44,8 @@ lid and ambient-light sensing. `gyro` talks to them directly through IOKit.
 
 ## Install
 
-Build it from source:
+Download `gyro` from the [latest release](https://github.com/nathanielnoyd/gyro-mac/releases/latest),
+or build it from source:
 
 ```bash
 git clone https://github.com/nathanielnoyd/gyro-mac.git

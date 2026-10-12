@@ -1,0 +1,35 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Publish the command-line tool
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v5
+      - name: Build
+        run: swift build -c release --arch arm64 -Xswiftc -warnings-as-errors
+      - name: Package
+        run: |
+          mkdir -p dist
+          cp "$(swift build -c release --arch arm64 --show-bin-path)/gyro" dist/
+          tar -C dist -czf "gyro-${GITHUB_REF_NAME}-macos-arm64.tar.gz" gyro
+          shasum -a 256 gyro-*.tar.gz > checksums.txt
+      - name: Publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >
+          gh release create "$GITHUB_REF_NAME"
+          gyro-*.tar.gz checksums.txt
+          --title "$GITHUB_REF_NAME"
+          --notes-file <(awk -v version="${GITHUB_REF_NAME#v}" '
+            $0 ~ "^## \\[" version "\\]" { found = 1; next }
+            found && (/^## / || /^\[.*\]: /) { exit }
+            found { print }
+          ' CHANGELOG.md)
