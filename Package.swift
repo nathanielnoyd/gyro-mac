@@ -11,7 +11,7 @@ let package = Package(
         .executable(name: "gyro", targets: ["gyro"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/apple/swift-argument-parser", from: "1.5.0"),
+        .package(url: "https://github.com/apple/swift-argument-parser", from: "1.5.0")
     ],
     targets: [
         .target(name: "GyroKit"),
@@ -28,5 +28,6 @@ let package = Package(
             dependencies: ["GyroKit"],
             resources: [.copy("Fixtures")]
         ),
+        .testTarget(name: "GyroXPCTests", dependencies: ["GyroXPC"]),
     ]
 )

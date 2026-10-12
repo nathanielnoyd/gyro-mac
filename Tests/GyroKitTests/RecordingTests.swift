@@ -64,3 +64,29 @@ private enum Recording {
         }
     }
 }
+
+struct MotionRecordingCSVTests {
+    @Test(arguments: [
+        ("time,sensor,x,y,z\n0.1,q,1,2,3", 2),
+        ("time,sensor,x,y,z\n0.1,a,1,2,3\n0.2,g,1,2", 3),
+        ("0.1,a,one,2,3", 1),
+        ("0.1,a,1,2,3,4", 1),
+    ])
+    func rejectsMalformedRows(csv: String, line: Int) {
+        #expect(throws: GyroError.invalidRecording(line: line)) {
+            try MotionRecording(csv: csv)
+        }
+    }
+
+    @Test func readsRowsWithOrWithoutTheHeader() throws {
+        let rows = "0.1,a,0,0,-1\n0.2,g,1.5,0,0"
+        let withHeader = try MotionRecording(csv: MotionRecording.csvHeader + "\n" + rows)
+        let withoutHeader = try MotionRecording(csv: rows)
+        #expect(withHeader.samples == withoutHeader.samples)
+        #expect(
+            withHeader.samples == [
+                MotionSample(kind: .acceleration, value: Vector3(x: 0, y: 0, z: -1), timestamp: 0.1),
+                MotionSample(kind: .rotationRate, value: Vector3(x: 1.5, y: 0, z: 0), timestamp: 0.2),
+            ])
+    }
+}
