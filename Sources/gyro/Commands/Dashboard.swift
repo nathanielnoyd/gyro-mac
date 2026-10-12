@@ -398,7 +398,7 @@ private struct DashboardView {
             dial[row] + "   " + ((1...3).contains(row) ? numerals[row - 1] : "")
         }
         return Panel(
-            title: "Lid", accessory: Style.dim(Self.describe(lidAngle: lidAngle)), width: width,
+            title: "Lid", accessory: Style.dim(LidPosition(angle: lidAngle).description), width: width,
             lines: Self.centered(rows, in: Panel.contentWidth(for: width))
         ).render()
     }
@@ -587,15 +587,6 @@ private struct DashboardView {
     }
 
     // MARK: Formatting
-
-    private static func describe(lidAngle: Double) -> String {
-        switch lidAngle {
-        case ..<1: "Closed"
-        case ..<60: "Barely open"
-        case ..<135: "Open"
-        default: "Wide open"
-        }
-    }
 
     /// A value with a sign and fixed precision, so digits don't jump around, and no sign on zero.
     private static func signed(_ value: Double, digits: Int) -> String {

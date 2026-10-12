@@ -43,7 +43,7 @@ struct LidPanel: View {
     var body: some View {
         GlassPanel(title: "Lid", systemImage: "laptopcomputer") {
             if let angle {
-                Text(description(for: angle))
+                Text(LidPosition(angle: angle).description)
             }
         } content: {
             if let angle {
@@ -60,15 +60,6 @@ struct LidPanel: View {
                     .font(.callout)
                     .foregroundStyle(.secondary)
             }
-        }
-    }
-
-    private func description(for angle: Double) -> String {
-        switch angle {
-        case ..<1: "Closed"
-        case ..<60: "Barely open"
-        case ..<135: "Open"
-        default: "Wide open"
         }
     }
 }

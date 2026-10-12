@@ -45,7 +45,7 @@ struct Lid: AsyncParsableCommand {
 
     private func format(_ angle: Double) -> String {
         guard Style.isTerminal else { return "\(Int(angle))°" }
-        return Style.bold("\(Int(angle))°") + "  " + Style.dim(Self.describe(angle))
+        return Style.bold("\(Int(angle))°") + "  " + Style.dim(LidPosition(angle: angle).description.lowercased())
     }
 
     /// A bar across the range from closed to flat open, with the angle and what it means.
@@ -55,15 +55,7 @@ struct Lid: AsyncParsableCommand {
         let bar =
             Style.color(Palette.accent, String(repeating: "━", count: filled))
             + Style.color(Palette.border, String(repeating: "─", count: width - filled))
-        return "  " + bar + "  " + Style.bold(String(format: "%3.0f°", angle)) + "  " + Style.dim(Self.describe(angle))
-    }
-
-    private static func describe(_ angle: Double) -> String {
-        switch angle {
-        case ..<1: "closed"
-        case ..<60: "barely open"
-        case ..<135: "open"
-        default: "wide open"
-        }
+        return "  " + bar + "  " + Style.bold(String(format: "%3.0f°", angle)) + "  "
+            + Style.dim(LidPosition(angle: angle).description.lowercased())
     }
 }
