@@ -29,7 +29,7 @@ public struct MotionRecording: Hashable, Sendable {
         return text
     }
 
-    public init(csv: String) throws {
+    public init(csv: String) throws(GyroError) {
         var samples: [MotionSample] = []
         for (index, line) in csv.split(whereSeparator: \.isNewline).enumerated() {
             if index == 0, line == Self.csvHeader { continue }
@@ -37,12 +37,12 @@ public struct MotionRecording: Hashable, Sendable {
             guard fields.count == 5,
                 let time = Double(fields[0]),
                 let x = Double(fields[2]), let y = Double(fields[3]), let z = Double(fields[4])
-            else { throw GyroError.invalidRecording(line: index + 1) }
+            else { throw .invalidRecording(line: index + 1) }
             let kind: MotionSample.Kind
             switch fields[1] {
             case "a": kind = .acceleration
             case "g": kind = .rotationRate
-            default: throw GyroError.invalidRecording(line: index + 1)
+            default: throw .invalidRecording(line: index + 1)
             }
             samples.append(MotionSample(kind: kind, value: Vector3(x: x, y: y, z: z), timestamp: time))
         }
