@@ -15,6 +15,7 @@ public enum GyroError: Error, Equatable, Sendable {
 }
 
 extension GyroError: CustomStringConvertible {
+    /// A one-sentence explanation of the error, suitable for showing to the user.
     public var description: String {
         switch self {
         case .sensorUnavailable(let sensor):

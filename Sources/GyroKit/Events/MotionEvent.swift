@@ -2,6 +2,7 @@ import Foundation
 
 /// Something ``MotionEventDetector`` noticed: a few quick taps, or a summary of ongoing motion.
 public struct MotionEvent: Hashable, Sendable, Codable {
+    /// Whether an event is a group of taps or a summary of ongoing motion.
     public enum Kind: String, Hashable, Sendable, Codable, CaseIterable {
         /// One to a few quick taps or knocks, with quiet before and after.
         case taps
@@ -9,13 +10,16 @@ public struct MotionEvent: Hashable, Sendable, Codable {
         case activity
     }
 
+    /// Whether the event is a group of taps or a summary of ongoing motion.
     public var kind: Kind
     /// Seconds on the sensor clock: when the first tap began, or when the summarized stretch ended.
     public var time: Double
     /// How many taps the group holds. Zero for activity.
     public var count: Int
+    /// The values describing the event. Only features of the event's ``kind`` appear.
     public var features: [MotionFeature: Double]
 
+    /// Creates an event.
     public init(kind: Kind, time: Double, count: Int = 0, features: [MotionFeature: Double]) {
         self.kind = kind
         self.time = time
@@ -23,6 +27,7 @@ public struct MotionEvent: Hashable, Sendable, Codable {
         self.features = features
     }
 
+    /// The value of `feature`, or `nil` if the event doesn't have it.
     public subscript(feature: MotionFeature) -> Double? {
         features[feature]
     }
@@ -73,6 +78,7 @@ public enum MotionFeature: String, Hashable, Sendable, Codable, CodingKeyReprese
     /// How much the Mac is turning, root mean square, log₁₀ °/s.
     case turning
 
+    /// The kind of event this feature describes.
     public var kind: MotionEvent.Kind {
         switch self {
         case .strength, .spin, .rockX, .rockY, .pushX, .pushY, .pushZ, .length, .tone: .taps
@@ -106,6 +112,7 @@ public enum MotionFeature: String, Hashable, Sendable, Codable, CodingKeyReprese
         }
     }
 
+    /// The feature's name in sentence case, such as “Rock front–back”.
     public var title: String {
         switch self {
         case .strength: "Strength"

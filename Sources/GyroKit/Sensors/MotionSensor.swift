@@ -6,6 +6,7 @@ public struct MotionSensor: Sendable {
     /// The requested time between reports from each sensor.
     public var reportInterval: Duration
 
+    /// Creates a sensor that requests a report every `reportInterval`. Nothing starts until ``samples()``.
     public init(reportInterval: Duration = .milliseconds(1)) {
         self.reportInterval = reportInterval
     }

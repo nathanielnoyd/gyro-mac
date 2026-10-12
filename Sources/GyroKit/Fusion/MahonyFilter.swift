@@ -15,14 +15,17 @@ public struct MahonyFilter: Sendable {
     /// How quickly the filter learns and removes a constant gyro bias.
     public var integralGain: Double
 
+    /// The current estimate, as a rotation from the sensor frame to the world. Starts at ``Quaternion/identity``.
     public private(set) var orientation: Quaternion = .identity
     private var integralError: Vector3 = .zero
 
+    /// Creates a filter at the identity orientation.
     public init(proportionalGain: Double = 1.0, integralGain: Double = 0.05) {
         self.proportionalGain = proportionalGain
         self.integralGain = integralGain
     }
 
+    /// The current estimate as pitch, roll and yaw, in degrees.
     public var attitude: Attitude { Attitude(orientation) }
 
     /// Advances the estimate by one step.
@@ -48,6 +51,7 @@ public struct MahonyFilter: Sendable {
         orientation = orientation.integrated(rate: correctedRate, dt: dt)
     }
 
+    /// Returns the estimate to the identity orientation and forgets the learned bias, keeping the gains.
     public mutating func reset() {
         orientation = .identity
         integralError = .zero

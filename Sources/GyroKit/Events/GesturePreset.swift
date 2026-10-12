@@ -5,14 +5,18 @@ import Foundation
 /// The starting signatures are educated guesses about how MacBooks respond. Every desk and
 /// every hand is different, so each gesture works best after recording a few examples of it.
 public struct GesturePreset: Identifiable, Hashable, Sendable {
+    /// A stable identifier, such as `tap-left`.
     public var id: String
+    /// The gesture's name in title case, such as “Tap Left”.
     public var name: String
     /// An SF Symbol.
     public var symbol: String
     /// What to do while recording examples.
     public var instructions: String
+    /// The starting signature, used until examples of the gesture are recorded.
     public var signature: GestureSignature
 
+    /// The built-in gesture whose id is `id`, if there is one.
     public static func named(_ id: String) -> GesturePreset? {
         all.first { $0.id == id }
     }
@@ -25,6 +29,7 @@ public struct GesturePreset: Identifiable, Hashable, Sendable {
     //
     // There's no knock-on-the-desk gesture: in practice knocks and taps on the Mac were
     // confused too often to be worth triggering anything.
+    /// Every built-in gesture.
     public static let all: [GesturePreset] = [
         GesturePreset(
             id: "tap-left",

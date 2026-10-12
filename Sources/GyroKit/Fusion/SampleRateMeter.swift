@@ -6,6 +6,7 @@ public struct SampleRateMeter: Sendable {
     private var windowStart: Double?
     private var count = 0
 
+    /// Creates a meter with no measurement yet.
     public init() {}
 
     /// Records `count` readings received by `time`, in seconds.
@@ -22,6 +23,7 @@ public struct SampleRateMeter: Sendable {
         }
     }
 
+    /// Discards the measurement and the window in progress.
     public mutating func reset() {
         self = SampleRateMeter()
     }

@@ -32,6 +32,7 @@ public struct GyroBiasEstimator: Sendable {
     private var stillDuration = 0.0
     private var learningDuration = 0.0
 
+    /// Creates an estimator with the default thresholds and no learned bias.
     public init() {}
 
     /// Feeds one gyroscope reading, the latest acceleration, and the seconds since the previous reading.

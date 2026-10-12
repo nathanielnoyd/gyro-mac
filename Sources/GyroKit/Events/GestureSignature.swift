@@ -3,11 +3,14 @@
 /// A range that reaches the end of its feature's ``MotionFeature/domain`` is open on that side,
 /// so "at least 20 mg" is a range from 20 mg to the top of the strength domain.
 public struct GestureSignature: Hashable, Sendable, Codable {
+    /// Whether the gesture is taps or activity. Events of the other kind never match.
     public var kind: MotionEvent.Kind
     /// How many taps the gesture has. `nil` accepts any number, and is always `nil` for activity.
     public var count: Int?
+    /// The range each feature must fall in. Features left out can take any value.
     public var ranges: [MotionFeature: ClosedRange<Double>]
 
+    /// Creates a signature.
     public init(kind: MotionEvent.Kind, count: Int? = nil, ranges: [MotionFeature: ClosedRange<Double>]) {
         self.kind = kind
         self.count = count
@@ -17,7 +20,9 @@ public struct GestureSignature: Hashable, Sendable, Codable {
     /// How far `event` sits from the middle of every range: 0 in the middle (or anywhere past an
     /// open end), 1 at an edge. `nil` when the event falls outside.
     ///
-    /// - Parameter tolerance: Scales every range around its middle. Above 1 is more forgiving.
+    /// - Parameters:
+    ///   - event: The event to measure.
+    ///   - tolerance: Scales every range around its middle. Above 1 is more forgiving.
     public func distance(to event: MotionEvent, tolerance: Double = 1) -> Double? {
         guard event.kind == kind, count.map({ $0 == event.count }) ?? true else { return nil }
         var sumOfSquares = 0.0

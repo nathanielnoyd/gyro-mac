@@ -6,6 +6,10 @@ import Foundation
 /// rolling ±10°, then settles on the desk while someone taps its left and right palm rest,
 /// double-taps it and types, then starts rocking again.
 public enum SimulatedMotion {
+    /// Returns an endless stream of simulated readings.
+    ///
+    /// Each step yields one acceleration and one rotation-rate reading, `rate` steps per second, paced
+    /// to real time. Timestamps are in seconds from 0. The simulation stops when the stream terminates.
     public static func samples(rate: Double = 800) -> AsyncStream<MotionSample> {
         AsyncStream { continuation in
             let task = Task {

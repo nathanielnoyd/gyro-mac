@@ -11,14 +11,17 @@ public struct Attitude: Hashable, Sendable, Codable {
     /// Rotation around the z axis. Without a magnetometer this drifts over time.
     public var yaw: Double
 
+    /// Creates an attitude from angles in degrees.
     public init(pitch: Double, roll: Double, yaw: Double) {
         self.pitch = pitch
         self.roll = roll
         self.yaw = yaw
     }
 
+    /// Level, with zero yaw.
     public static let zero = Attitude(pitch: 0, roll: 0, yaw: 0)
 
+    /// The angles for a rotation from the sensor frame to the world. Roll stays within ±90°.
     public init(_ q: Quaternion) {
         let sinRoll = 2 * (q.w * q.y - q.z * q.x)
         self.init(

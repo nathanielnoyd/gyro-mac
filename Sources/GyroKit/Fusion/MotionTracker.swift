@@ -6,12 +6,15 @@ public struct MotionSnapshot: Hashable, Sendable, Codable {
     public var rotationRate: Vector3 = .zero
     /// Whether the Mac is sitting still. While it is, the orientation estimate holds steady.
     public var isStill = false
+    /// The estimated orientation, in degrees. Yaw has no absolute reference, so it is relative to where
+    /// tracking started.
     public var attitude: Attitude = .zero
     /// The same orientation as ``attitude``, as a quaternion from the sensor frame to the world.
     public var orientation: Quaternion = .identity
     /// Timestamp of the newest reading, in seconds.
     public var timestamp: Double = 0
 
+    /// Creates a snapshot with no readings and the identity orientation.
     public init() {}
 }
 
@@ -21,8 +24,11 @@ public struct MotionSnapshot: Hashable, Sendable, Codable {
 /// supply the gravity reference for the next gyroscope step. The gyroscope's
 /// bias is learned whenever the Mac is still, which keeps yaw from drifting.
 public struct MotionTracker: Sendable {
+    /// The latest readings and orientation, updated by ``process(_:)``.
     public private(set) var snapshot = MotionSnapshot()
+    /// The orientation filter. Its gains can be changed while tracking.
     public var filter: MahonyFilter
+    /// Learns the gyroscope's bias while the Mac is still. Its thresholds can be changed while tracking.
     public var biasEstimator = GyroBiasEstimator()
 
     private var lastGyroTimestamp: Double?
@@ -32,10 +38,16 @@ public struct MotionTracker: Sendable {
     /// applying one huge step.
     private static let maximumStep = 0.1
 
+    /// Creates a tracker that estimates orientation with `filter`.
     public init(filter: MahonyFilter = MahonyFilter()) {
         self.filter = filter
     }
 
+    /// Feeds one reading and updates ``snapshot``.
+    ///
+    /// Accelerometer readings only update the acceleration. Gyroscope readings advance the orientation
+    /// once an acceleration has arrived. The first gyroscope reading, and any that follows a gap of
+    /// 0.1 s or more, only updates the rotation rate and restarts integration.
     public mutating func process(_ sample: MotionSample) {
         snapshot.timestamp = sample.timestamp
 

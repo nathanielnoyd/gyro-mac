@@ -4,12 +4,16 @@
 /// a state. It begins once the same signature has been the closest match for
 /// ``onsetCount`` summaries in a row, and ends after ``releaseCount`` summaries that don't match it.
 public struct GestureRecognizer: Sendable {
+    /// A gesture the recognizer looks for.
     public struct Candidate: Hashable, Sendable {
+        /// Identifies the gesture in each ``Recognition``.
         public var id: String
+        /// What the gesture looks like to the sensors.
         public var signature: GestureSignature
         /// Scales the signature's ranges. Above 1 is more forgiving.
         public var tolerance: Double
 
+        /// Creates a candidate.
         public init(id: String, signature: GestureSignature, tolerance: Double = 1) {
             self.id = id
             self.signature = signature
@@ -17,7 +21,9 @@ public struct GestureRecognizer: Sendable {
         }
     }
 
+    /// A gesture the recognizer found.
     public struct Recognition: Hashable, Sendable {
+        /// What happened to the gesture.
         public enum Phase: Hashable, Sendable {
             /// A group of taps matched.
             case tapped
@@ -27,13 +33,20 @@ public struct GestureRecognizer: Sendable {
             case ended
         }
 
+        /// The matching candidate's ``Candidate/id``.
         public var id: String
+        /// Whether taps matched, or an activity began or ended.
         public var phase: Phase
+        /// The event that led to the recognition.
         public var event: MotionEvent
         /// How far the event was from the middle of the signature, 0 to 1.
         public var distance: Double
     }
 
+    /// The gestures to look for.
+    ///
+    /// Removing the candidate for ``activeActivity`` clears it without an ``Recognition/Phase/ended``
+    /// recognition.
     public var candidates: [Candidate] {
         didSet {
             if let activeActivity, !candidates.contains(where: { $0.id == activeActivity }) {
@@ -54,6 +67,7 @@ public struct GestureRecognizer: Sendable {
     private var streak = 0
     private var misses = 0
 
+    /// Creates a recognizer that looks for `candidates`.
     public init(candidates: [Candidate] = []) {
         self.candidates = candidates
     }
@@ -67,6 +81,10 @@ public struct GestureRecognizer: Sendable {
             .min { $0.1 < $1.1 }
     }
 
+    /// Feeds one event and returns what it recognized.
+    ///
+    /// A taps event yields at most one ``Recognition/Phase/tapped`` recognition. An activity event can
+    /// end one activity and begin another in the same call.
     public mutating func recognize(_ event: MotionEvent) -> [Recognition] {
         let match = bestMatch(for: event)
         switch event.kind {

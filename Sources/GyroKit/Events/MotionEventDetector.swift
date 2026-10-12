@@ -18,6 +18,7 @@ public struct MotionEventDetector: Sendable {
     /// Bump when features change meaning, so saved examples are measured again from their recordings.
     public static let version = 1
 
+    /// Thresholds and timings that tune the detector.
     public struct Configuration: Hashable, Sendable {
         /// The smallest jolt, in g, that counts, however quiet the Mac is.
         public var minimumThreshold = 0.004
@@ -37,14 +38,17 @@ public struct MotionEventDetector: Sendable {
         /// Seconds between activity summaries.
         public var activityInterval = 0.25
 
+        /// Creates a configuration with the default values.
         public init() {}
     }
 
+    /// The thresholds and timings in use.
     public var configuration: Configuration
 
     /// The current background level, in g, that jolts are measured against.
     public private(set) var noiseFloor = 0.001
 
+    /// Creates a detector with `configuration`.
     public init(configuration: Configuration = Configuration()) {
         self.configuration = configuration
     }

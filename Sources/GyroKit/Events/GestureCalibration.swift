@@ -14,9 +14,12 @@ public struct GestureCalibration: Codable, Hashable, Sendable, Identifiable {
         public var recording: String
         /// When the gesture was performed, on the sensor clock.
         public var start: Double
+        /// When the performance ended, on the sensor clock.
         public var end: Double
+        /// The events that count as examples of the gesture.
         public var examples: [MotionEvent]
 
+        /// Creates a section.
         public init(gesture: String, recording: String, start: Double, end: Double, examples: [MotionEvent]) {
             self.gesture = gesture
             self.recording = recording
@@ -26,12 +29,16 @@ public struct GestureCalibration: Codable, Hashable, Sendable, Identifiable {
         }
     }
 
+    /// The session's ``stamp(for:)``, which also names its file.
     public var id: String
+    /// When the session was recorded.
     public var date: Date
     /// The ``MotionEventDetector/version`` the examples were measured with.
     public var detectorVersion: Int
+    /// One section per gesture, in the order they were recorded.
     public var sections: [Section]
 
+    /// Creates a calibration recorded at `date`, measured with the current detector version.
     public init(date: Date = .now, sections: [Section] = []) {
         self.id = Self.stamp(for: date)
         self.date = date
@@ -101,10 +108,12 @@ public struct GestureCalibration: Codable, Hashable, Sendable, Identifiable {
         home.appending(path: "Library/Application Support/Gyro")
     }
 
+    /// The `Calibrations` folder in `directory`, such as the one ``directory(home:)`` returns.
     public static func calibrationsDirectory(in directory: URL) -> URL {
         directory.appending(path: "Calibrations")
     }
 
+    /// The `Recordings` folder in `directory`, where raw readings are saved.
     public static func recordingsDirectory(in directory: URL) -> URL {
         directory.appending(path: "Recordings")
     }

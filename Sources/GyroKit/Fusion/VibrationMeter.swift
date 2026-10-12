@@ -13,8 +13,10 @@ public struct VibrationMeter: Sendable {
 
     private var restingMagnitude: Double?
 
+    /// Creates a meter with no readings yet.
     public init() {}
 
+    /// Feeds one accelerometer reading, in g, and raises ``peak`` if it is the largest vibration so far.
     public mutating func process(acceleration: Vector3) {
         let magnitude = acceleration.magnitude
         let resting = restingMagnitude.map { $0 + (magnitude - $0) * Self.smoothing } ?? magnitude

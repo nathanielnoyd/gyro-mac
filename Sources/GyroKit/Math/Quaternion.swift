@@ -2,11 +2,16 @@ import Foundation
 
 /// A unit quaternion describing the rotation from the sensor frame to the world frame.
 public struct Quaternion: Hashable, Sendable, Codable {
+    /// The scalar part.
     public var w: Double
+    /// The x component of the vector part.
     public var x: Double
+    /// The y component of the vector part.
     public var y: Double
+    /// The z component of the vector part.
     public var z: Double
 
+    /// Creates a quaternion from its components, without normalizing it.
     public init(w: Double, x: Double, y: Double, z: Double) {
         self.w = w
         self.x = x
@@ -14,6 +19,7 @@ public struct Quaternion: Hashable, Sendable, Codable {
         self.z = z
     }
 
+    /// No rotation: the sensor frame lines up with the world.
     public static let identity = Quaternion(w: 1, x: 0, y: 0, z: 0)
 
     /// A rotation of `angle` radians around `axis`.
@@ -24,6 +30,7 @@ public struct Quaternion: Hashable, Sendable, Codable {
         self.init(w: cos(half), x: unit.x * s, y: unit.y * s, z: unit.z * s)
     }
 
+    /// The quaternion scaled to unit length, or ``identity`` if every component is zero.
     public var normalized: Quaternion {
         let length = (w * w + x * x + y * y + z * z).squareRoot()
         guard length > 0 else { return .identity }

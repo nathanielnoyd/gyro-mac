@@ -14,6 +14,7 @@ public enum SPUSensor: String, CaseIterable, Sendable {
     case lidAngle = "lid-angle"
     case ambientLight = "ambient-light"
 
+    /// The sensor's name in sentence case, such as “Lid angle sensor”.
     public var displayName: String {
         switch self {
         case .accelerometer: "Accelerometer"

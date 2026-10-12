@@ -5,12 +5,15 @@ import Foundation
 /// Each row is one reading: `time,sensor,x,y,z`, where sensor is `a` for acceleration
 /// (g) or `g` for rotation rate (°/s). Time is on the sensor clock, in seconds.
 public struct MotionRecording: Hashable, Sendable {
+    /// The readings, in the order they were recorded.
     public var samples: [MotionSample]
 
+    /// Creates a recording of `samples`.
     public init(samples: [MotionSample]) {
         self.samples = samples
     }
 
+    /// The header row, without a line break.
     public static let csvHeader = "time,sensor,x,y,z"
 
     /// One reading as a CSV row, without a line break.
@@ -20,6 +23,7 @@ public struct MotionRecording: Hashable, Sendable {
         return String(format: "%.6f,%@,%.5f,%.5f,%.5f", sample.timestamp, sensor, v.x, v.y, v.z)
     }
 
+    /// The recording as CSV text: the header, then one row per reading, each ending in a line break.
     public var csv: String {
         var text = Self.csvHeader + "\n"
         text.reserveCapacity(samples.count * 48)
@@ -29,6 +33,9 @@ public struct MotionRecording: Hashable, Sendable {
         return text
     }
 
+    /// Reads a recording from CSV text. The header row is optional.
+    ///
+    /// - Throws: ``GyroError/invalidRecording(line:)`` for the first row that isn't a reading.
     public init(csv: String) throws(GyroError) {
         var samples: [MotionSample] = []
         for (index, line) in csv.split(whereSeparator: \.isNewline).enumerated() {
@@ -49,10 +56,12 @@ public struct MotionRecording: Hashable, Sendable {
         self.init(samples: samples)
     }
 
+    /// Reads a recording from a UTF-8 CSV file.
     public init(contentsOf url: URL) throws {
         try self.init(csv: String(contentsOf: url, encoding: .utf8))
     }
 
+    /// Writes the recording to `url` as CSV, replacing any file already there.
     public func write(to url: URL) throws {
         try Data(csv.utf8).write(to: url, options: .atomic)
     }

@@ -4,6 +4,10 @@
 public final class LidAngleSensor: Sendable {
     private let device: HIDDevice
 
+    /// Opens the hinge sensor.
+    ///
+    /// - Throws: ``GyroError/sensorUnavailable(_:)`` if this Mac has no lid angle sensor, or
+    ///   ``GyroError/ioKit(operation:code:)`` if it can't be opened.
     public init() throws(GyroError) {
         device = try SPUSensor.lidAngle.makeDevice()
         try device.open()

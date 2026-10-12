@@ -3,12 +3,14 @@ import XPC
 
 /// Streams IMU readings from the privileged helper. Used by the app.
 public enum MotionClient {
+    /// Why ``samples()`` failed, or why its stream ended.
     public enum Failure: Error, CustomStringConvertible {
         /// The helper started but couldn't read the sensors.
         case helper(String)
         /// The connection to the helper failed or closed.
         case connection(XPCRichError)
 
+        /// The helper's own message, or advice to reinstall the helper if the connection failed.
         public var description: String {
             switch self {
             case .helper(let message): message
