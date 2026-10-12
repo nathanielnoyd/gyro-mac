@@ -40,7 +40,10 @@ struct SignatureView: View {
             HStack(spacing: 5) {
                 ForEach(1...4, id: \.self) { count in
                     Circle()
-                        .fill(signature.count.map { count <= $0 } ?? true ? Color.accentColor : Color.secondary.opacity(0.2))
+                        .fill(
+                            signature.count.map { count <= $0 } ?? true
+                                ? Color.accentColor : Color.secondary.opacity(0.2)
+                        )
                         .frame(width: 10, height: 10)
                         .overlay {
                             if latest?.count == count {
@@ -150,7 +153,8 @@ private struct FeatureTrack: View {
     }
 
     private var accessibilityValue: String {
-        let rangeText = range.map { "range \(feature.format($0.lowerBound)) to \(feature.format($0.upperBound))" } ?? "any value"
+        let rangeText =
+            range.map { "range \(feature.format($0.lowerBound)) to \(feature.format($0.upperBound))" } ?? "any value"
         let valueText = value.map { "latest \(feature.format($0))" } ?? "no reading yet"
         return "\(rangeText), \(valueText)"
     }
@@ -162,7 +166,9 @@ nonisolated private struct RangeShape: Shape {
     var end: CGFloat
 
     func path(in rect: CGRect) -> Path {
-        Path(roundedRect: CGRect(x: start, y: rect.minY, width: end - start, height: rect.height), cornerRadius: rect.height / 2)
+        Path(
+            roundedRect: CGRect(x: start, y: rect.minY, width: end - start, height: rect.height),
+            cornerRadius: rect.height / 2)
     }
 }
 

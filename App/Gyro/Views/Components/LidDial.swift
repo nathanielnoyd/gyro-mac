@@ -18,11 +18,13 @@ struct LidDial: View {
 
             var track = Path()
             track.addArc(center: hinge, radius: radius, startAngle: .zero, endAngle: .degrees(-180), clockwise: true)
-            context.stroke(track, with: .color(.secondary.opacity(0.25)), style: StrokeStyle(lineWidth: 8, lineCap: .round))
+            context.stroke(
+                track, with: .color(.secondary.opacity(0.25)), style: StrokeStyle(lineWidth: 8, lineCap: .round))
 
             if angle > 0 {
                 var progress = Path()
-                progress.addArc(center: hinge, radius: radius, startAngle: .zero, endAngle: .degrees(-angle), clockwise: true)
+                progress.addArc(
+                    center: hinge, radius: radius, startAngle: .zero, endAngle: .degrees(-angle), clockwise: true)
                 context.stroke(progress, with: .color(.accentColor), style: StrokeStyle(lineWidth: 8, lineCap: .round))
             }
 
@@ -37,7 +39,8 @@ struct LidDial: View {
             var base = Path()
             base.move(to: hinge)
             base.addLine(to: point(at: 0, distance: length))
-            context.stroke(base, with: .color(.secondary.opacity(0.7)), style: StrokeStyle(lineWidth: 9, lineCap: .round))
+            context.stroke(
+                base, with: .color(.secondary.opacity(0.7)), style: StrokeStyle(lineWidth: 9, lineCap: .round))
 
             var lid = Path()
             let lidHinge = CGPoint(x: hinge.x, y: hinge.y - 8)

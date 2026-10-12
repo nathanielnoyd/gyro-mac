@@ -1,5 +1,6 @@
 import Foundation
 import Testing
+
 @testable import GyroKit
 
 /// Replays real sensor recordings through the fusion pipeline.

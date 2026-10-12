@@ -16,7 +16,8 @@ enum StudioLighting {
     }
 
     private static func makeImage() -> CGImage {
-        let width = 512, height = 256
+        let width = 512
+        let height = 256
         let space = CGColorSpace(name: CGColorSpace.sRGB)!
         let context = CGContext(
             data: nil, width: width, height: height, bitsPerComponent: 8, bytesPerRow: 0,

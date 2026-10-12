@@ -9,7 +9,9 @@ struct Sensors: ParsableCommand {
         guard Style.isTerminal else {
             print("SENSOR".padded(to: 24) + "PRESENT".padded(to: 10) + "NEEDS ROOT")
             for sensor in SPUSensor.allCases {
-                print(sensor.displayName.padded(to: 24) + (sensor.isPresent ? "yes" : "no").padded(to: 10) + (sensor.requiresRoot ? "yes" : "no"))
+                print(
+                    sensor.displayName.padded(to: 24) + (sensor.isPresent ? "yes" : "no").padded(to: 10)
+                        + (sensor.requiresRoot ? "yes" : "no"))
             }
             return
         }
@@ -19,7 +21,9 @@ struct Sensors: ParsableCommand {
             let name = sensor.isPresent ? Style.bold(sensor.displayName) : Style.dim(sensor.displayName)
             return mark + " " + name.padded(to: 24) + status(of: sensor)
         }
-        print(Panel(title: "Sensors", accessory: Style.dim(SystemInfo.modelIdentifier), width: 50, lines: lines).render().joined(separator: "\n"))
+        print(
+            Panel(title: "Sensors", accessory: Style.dim(SystemInfo.modelIdentifier), width: 50, lines: lines).render()
+                .joined(separator: "\n"))
     }
 
     private func status(of sensor: SPUSensor) -> String {

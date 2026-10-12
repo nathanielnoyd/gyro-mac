@@ -36,7 +36,9 @@ struct RecordingSheet: View {
                         discardLast: gestures.discardLastExample
                     )
                 case .activity:
-                    ActivityProgress(stage: stage(session.phase), count: session.examples.count, duration: GestureModel.RecordingSession.activityDuration)
+                    ActivityProgress(
+                        stage: stage(session.phase), count: session.examples.count,
+                        duration: GestureModel.RecordingSession.activityDuration)
                 }
 
                 LevelMeter(vibration: sensors.history.points.last?.vibration ?? 0)
@@ -249,6 +251,7 @@ struct LevelMeter: View {
 
     private func position(_ g: Double) -> CGFloat {
         let value = log10(max(g, 1e-6))
-        return CGFloat(min(max((value - Self.range.lowerBound) / (Self.range.upperBound - Self.range.lowerBound), 0), 1))
+        return CGFloat(
+            min(max((value - Self.range.lowerBound) / (Self.range.upperBound - Self.range.lowerBound), 0), 1))
     }
 }

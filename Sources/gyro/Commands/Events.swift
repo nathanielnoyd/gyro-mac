@@ -53,7 +53,9 @@ struct Events: AsyncParsableCommand {
         let output = try record.map(RecordingFile.init)
         let samples = try MotionSensor().samples(orExplain: "events")
         // On stderr, so it stays out of piped output.
-        let banner = Style.color(Palette.green, "●") + " " + Style.bold("Listening") + Style.dim("  Tap or type. Press Ctrl-C to stop.")
+        let banner =
+            Style.color(Palette.green, "●") + " " + Style.bold("Listening")
+            + Style.dim("  Tap or type. Press Ctrl-C to stop.")
         FileHandle.standardError.write(Data((banner + "\n").utf8))
         var detector = MotionEventDetector()
         for await sample in samples {
@@ -69,9 +71,10 @@ struct Events: AsyncParsableCommand {
 /// Matches events against the built-in gestures and prints the results.
 private struct EventPrinter {
     let verbose: Bool
-    private var recognizer = GestureRecognizer(candidates: GesturePreset.all.map {
-        GestureRecognizer.Candidate(id: $0.id, signature: $0.signature)
-    })
+    private var recognizer = GestureRecognizer(
+        candidates: GesturePreset.all.map {
+            GestureRecognizer.Candidate(id: $0.id, signature: $0.signature)
+        })
     private var startTime: Double?
     /// The last activity summary printed, to skip repeats while nothing much changes.
     private var lastActivity: MotionEvent?
@@ -96,9 +99,13 @@ private struct EventPrinter {
             switch recognition.phase {
             case .tapped:
                 let strength = recognition.event[.strength].map(MotionFeature.strength.format) ?? ""
-                print("\(time)  \(Style.color(Palette.cyan, glyph)) \(Style.bold(name.padded(to: 16)))\(Style.dim(strength))")
+                print(
+                    "\(time)  \(Style.color(Palette.cyan, glyph)) \(Style.bold(name.padded(to: 16)))\(Style.dim(strength))"
+                )
             case .began:
-                print("\(time)  \(Style.color(Palette.cyan, glyph)) \(Style.bold(name.padded(to: 16)))\(Style.dim("began"))")
+                print(
+                    "\(time)  \(Style.color(Palette.cyan, glyph)) \(Style.bold(name.padded(to: 16)))\(Style.dim("began"))"
+                )
             case .ended:
                 print("\(time)  \(Style.dim(glyph + " " + name.padded(to: 16) + "ended"))")
             }

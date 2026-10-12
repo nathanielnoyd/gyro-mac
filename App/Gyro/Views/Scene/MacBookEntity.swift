@@ -47,7 +47,8 @@ final class MacBookEntity: Entity {
 
         let top = Size.baseHeight / 2
         let keyboard = ModelEntity(
-            mesh: .generateBox(width: Size.width * 0.86, height: 0.0008, depth: Size.depth * 0.42, cornerRadius: 0.0004),
+            mesh: .generateBox(
+                width: Size.width * 0.86, height: 0.0008, depth: Size.depth * 0.42, cornerRadius: 0.0004),
             materials: [Materials.keyboard]
         )
         keyboard.position = [0, top, -Size.depth * 0.17]
@@ -74,7 +75,8 @@ final class MacBookEntity: Entity {
         hinge.addChild(lid)
 
         let display = ModelEntity(
-            mesh: .generateBox(width: Size.width - 0.01, height: 0.0006, depth: Size.depth - 0.012, cornerRadius: 0.004),
+            mesh: .generateBox(
+                width: Size.width - 0.01, height: 0.0006, depth: Size.depth - 0.012, cornerRadius: 0.004),
             materials: [Materials.display]
         )
         display.position = [0, -Size.lidHeight / 2, 0]
@@ -98,7 +100,8 @@ extension MacBookEntity {
     private func addArrow(from origin: SIMD3<Float>, direction: SIMD3<Float>, length: Float, color: NSColor) {
         let material = UnlitMaterial(color: color)
         let headLength: Float = 0.018
-        let shaft = ModelEntity(mesh: .generateCylinder(height: length - headLength, radius: 0.0022), materials: [material])
+        let shaft = ModelEntity(
+            mesh: .generateCylinder(height: length - headLength, radius: 0.0022), materials: [material])
         let head = ModelEntity(mesh: .generateCone(height: headLength, radius: 0.007), materials: [material])
 
         // Cylinders and cones are built along +y; turn them to face `direction`.

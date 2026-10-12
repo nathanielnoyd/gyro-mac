@@ -42,7 +42,8 @@ public struct GyroBiasEstimator: Sendable {
         smoothedRate += (corrected - smoothedRate) * min(dt / Self.smoothingTime, 1)
 
         let magnitude = acceleration.magnitude
-        let resting = restingMagnitude.map { $0 + (magnitude - $0) * min(dt / Self.restingMagnitudeTime, 1) } ?? magnitude
+        let resting =
+            restingMagnitude.map { $0 + (magnitude - $0) * min(dt / Self.restingMagnitudeTime, 1) } ?? magnitude
         restingMagnitude = resting
 
         let calm = smoothedRate.magnitude < rotationThreshold && abs(magnitude - resting) < accelerationTolerance

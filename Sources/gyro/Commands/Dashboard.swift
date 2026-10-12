@@ -27,11 +27,12 @@ struct Dashboard: AsyncParsableCommand {
         let motionTask = feed.map { feed in Task { await feed.run() } }
         defer { motionTask?.cancel() }
 
-        let source: DashboardView.Source = if feed == nil {
-            .unavailable(Self.motionUnavailableReason)
-        } else {
-            demo ? .simulated : .live
-        }
+        let source: DashboardView.Source =
+            if feed == nil {
+                .unavailable(Self.motionUnavailableReason)
+            } else {
+                demo ? .simulated : .live
+            }
         var view = DashboardView(source: source)
         let screen = TerminalScreen()
         defer { screen.restore() }
@@ -90,9 +91,10 @@ private final class MotionFeed: Sendable {
         var tracker = MotionTracker()
         var vibration = VibrationMeter()
         var detector = MotionEventDetector()
-        var recognizer = GestureRecognizer(candidates: GesturePreset.all.map {
-            GestureRecognizer.Candidate(id: $0.id, signature: $0.signature)
-        })
+        var recognizer = GestureRecognizer(
+            candidates: GesturePreset.all.map {
+                GestureRecognizer.Candidate(id: $0.id, signature: $0.signature)
+            })
         var sampleCount = 0
         var taps: [MotionEvent] = []
         var recognitions: [GestureRecognizer.Recognition] = []
@@ -206,7 +208,10 @@ private struct DashboardView {
         sampleRate.record(frame.sampleCount, at: snapshot.timestamp)
         activeActivity = frame.activeActivity
 
-        history.append(Point(time: snapshot.timestamp, acceleration: snapshot.acceleration, rotationRate: snapshot.rotationRate, vibration: frame.vibration))
+        history.append(
+            Point(
+                time: snapshot.timestamp, acceleration: snapshot.acceleration, rotationRate: snapshot.rotationRate,
+                vibration: frame.vibration))
         let cutoff = snapshot.timestamp - Self.historyDuration
         if let firstKept = history.firstIndex(where: { $0.time >= cutoff }), firstKept > 0 {
             history.removeFirst(firstKept)
@@ -229,14 +234,17 @@ private struct DashboardView {
         var panels: [String]
         if width >= Self.twoColumnWidth {
             let columnWidth = (width - 1) / 2
-            let left = showsMotion
+            let left =
+                showsMotion
                 ? accelerationPanel(width: columnWidth) + rotationPanel(width: columnWidth)
                 : setupPanel(width: columnWidth)
             let right = (showsMotion ? orientationPanel(width: columnWidth) : []) + lidPanel(width: columnWidth)
             panels = Self.columns(left, right, width: columnWidth)
         } else {
-            panels = showsMotion
-                ? accelerationPanel(width: width) + rotationPanel(width: width) + orientationPanel(width: width) + lidPanel(width: width)
+            panels =
+                showsMotion
+                ? accelerationPanel(width: width) + rotationPanel(width: width) + orientationPanel(width: width)
+                    + lidPanel(width: width)
                 : setupPanel(width: width) + lidPanel(width: width)
         }
         let vibration = showsMotion ? vibrationPanel(width: width) : []
@@ -261,8 +269,13 @@ private struct DashboardView {
             switch source {
             case .live, .simulated:
                 let isLive = if case .live = source { true } else { false }
-                status = Style.color(isLive ? Palette.green : Palette.purple, "●") + " " + Style.bold(isLive ? "Live" : "Simulated")
-                details = [sampleRate.hertz.map { String(format: "%.0f Hz", $0) } ?? "starting", snapshot.isStill ? "At rest" : "Moving"]
+                status =
+                    Style.color(isLive ? Palette.green : Palette.purple, "●") + " "
+                    + Style.bold(isLive ? "Live" : "Simulated")
+                details = [
+                    sampleRate.hertz.map { String(format: "%.0f Hz", $0) } ?? "starting",
+                    snapshot.isStill ? "At rest" : "Moving",
+                ]
             case .unavailable:
                 status = Style.color(Palette.yellow, "●") + " " + Style.bold("Lid only")
             }
@@ -290,12 +303,18 @@ private struct DashboardView {
         let hints = Style.dim(keys.joined(separator: "   ")) + " "
 
         var message = ""
-        if let toast, ContinuousClock.now - toast.shown < Self.toastDuration, let preset = GesturePreset.named(toast.recognition.id) {
+        if let toast, ContinuousClock.now - toast.shown < Self.toastDuration,
+            let preset = GesturePreset.named(toast.recognition.id)
+        {
             let strength = toast.recognition.event[.strength].map(MotionFeature.strength.format)
             let detail = toast.recognition.phase == .began ? "started" : strength ?? ""
-            message = Style.color(Palette.cyan, String(preset.glyph)) + " " + Style.bold(preset.name) + "  " + Style.dim(detail)
+            message =
+                Style.color(Palette.cyan, String(preset.glyph)) + " " + Style.bold(preset.name) + "  "
+                + Style.dim(detail)
         } else if let activeActivity, let preset = GesturePreset.named(activeActivity) {
-            message = Style.color(Palette.cyan, String(preset.glyph)) + " " + Style.bold(preset.name) + "  " + Style.dim("ongoing")
+            message =
+                Style.color(Palette.cyan, String(preset.glyph)) + " " + Style.bold(preset.name) + "  "
+                + Style.dim("ongoing")
         } else if showsMotion {
             message = Style.dim("Tap or type to try a gesture")
         }
@@ -329,14 +348,18 @@ private struct DashboardView {
     }
 
     /// Two rows per axis: its name, a trace of the last few seconds, and the current value.
-    private func axisTraces(_ value: KeyPath<Point, Vector3>, width: Int, minimumSpan: Double, format: (Double) -> String) -> [String] {
+    private func axisTraces(
+        _ value: KeyPath<Point, Vector3>, width: Int, minimumSpan: Double, format: (Double) -> String
+    ) -> [String] {
         let valueWidth = 11
         let traceColumns = Panel.contentWidth(for: width) - valueWidth - 4
         let current = history.last?[keyPath: value] ?? .zero
 
         return [\Vector3.x, \Vector3.y, \Vector3.z].enumerated().flatMap { index, axis in
             let color = Palette.axes[index]
-            let trace = Self.trace(history.map { ($0.time, $0[keyPath: value][keyPath: axis]) }, window: window, minimumSpan: minimumSpan, columns: traceColumns, rows: 2, color: color)
+            let trace = Self.trace(
+                history.map { ($0.time, $0[keyPath: value][keyPath: axis]) }, window: window, minimumSpan: minimumSpan,
+                columns: traceColumns, rows: 2, color: color)
             let name = Style.bold(Style.color(color, ["x", "y", "z"][index]))
             let reading = Style.bold(format(current[keyPath: axis]).leftPadded(to: valueWidth))
             return [name + "  " + trace[0] + " " + reading, "   " + trace[1]]
@@ -346,19 +369,27 @@ private struct DashboardView {
     private func orientationPanel(width: Int) -> [String] {
         let attitude = snapshot.attitude
         let horizon = Self.horizon(attitude, diameter: 14)
-        let readings = [("Pitch", attitude.pitch), ("Roll", attitude.roll), ("Yaw", attitude.yaw)].map { name, degrees in
-            Style.color(Palette.secondary, name.padded(to: 7)) + Style.bold((Self.signed(degrees, digits: 1) + "°").leftPadded(to: 8))
+        let readings = [("Pitch", attitude.pitch), ("Roll", attitude.roll), ("Yaw", attitude.yaw)].map {
+            name, degrees in
+            Style.color(Palette.secondary, name.padded(to: 7))
+                + Style.bold((Self.signed(degrees, digits: 1) + "°").leftPadded(to: 8))
         }
         let rows = horizon.indices.map { row in
             let reading = row % 2 == 1 && row / 2 < readings.count ? readings[row / 2] : ""
             return horizon[row] + "     " + reading
         }
-        return Panel(title: "Orientation", accessory: Style.dim("z zeroes yaw"), width: width, lines: Self.centered(rows, in: Panel.contentWidth(for: width))).render()
+        return Panel(
+            title: "Orientation", accessory: Style.dim("z zeroes yaw"), width: width,
+            lines: Self.centered(rows, in: Panel.contentWidth(for: width))
+        ).render()
     }
 
     private func lidPanel(width: Int) -> [String] {
         guard let lidAngle else {
-            return Panel(title: "Lid", width: width, lines: ["", Style.dim("This Mac doesn't report its lid angle."), "", "", ""]).render()
+            return Panel(
+                title: "Lid", width: width,
+                lines: ["", Style.dim("This Mac doesn't report its lid angle."), "", "", ""]
+            ).render()
         }
         let dial = Self.lidDial(angle: lidAngle, columns: 18, rows: 5)
         // Sized for the widest angle, so the dial doesn't shift as digits come and go.
@@ -366,7 +397,10 @@ private struct DashboardView {
         let rows = dial.indices.map { row in
             dial[row] + "   " + ((1...3).contains(row) ? numerals[row - 1] : "")
         }
-        return Panel(title: "Lid", accessory: Style.dim(Self.describe(lidAngle: lidAngle)), width: width, lines: Self.centered(rows, in: Panel.contentWidth(for: width))).render()
+        return Panel(
+            title: "Lid", accessory: Style.dim(Self.describe(lidAngle: lidAngle)), width: width,
+            lines: Self.centered(rows, in: Panel.contentWidth(for: width))
+        ).render()
     }
 
     private func vibrationPanel(width: Int) -> [String] {
@@ -377,17 +411,20 @@ private struct DashboardView {
         let chart = Self.seismograph(history, markers: markers, window: window, columns: columns, rows: 3)
         let reading = Style.bold(Style.color(Palette.gold, Self.milliG(latest).leftPadded(to: valueWidth)))
         let rows = chart.enumerated().map { row, line in line + " " + (row == 1 ? reading : "") }
-        return Panel(title: "Vibration", accessory: Style.dim("peak " + Self.milliG(peak)), width: width, lines: rows).render()
+        return Panel(title: "Vibration", accessory: Style.dim("peak " + Self.milliG(peak)), width: width, lines: rows)
+            .render()
     }
 
     private func setupPanel(width: Int) -> [String] {
         guard case .unavailable(let reason) = source else { return [] }
         let inner = Panel.contentWidth(for: width)
-        let hint = MotionSensor.isPresent
+        let hint =
+            MotionSensor.isPresent
             ? [Style.dim("Run ") + Style.bold("sudo gyro") + Style.dim(" to see them.")]
             : Self.wrap("The lid angle still works.", width: inner).map(Style.dim)
         let lines = [""] + Self.wrap(reason, width: inner) + [""] + hint + [""]
-        return Panel(title: "Motion", accessory: Style.color(Palette.yellow, "needs sudo"), width: width, lines: lines).render()
+        return Panel(title: "Motion", accessory: Style.color(Palette.yellow, "needs sudo"), width: width, lines: lines)
+            .render()
     }
 
     // MARK: Instruments
@@ -402,14 +439,18 @@ private struct DashboardView {
     ///
     /// The y range follows the data with a floor of `minimumSpan`, so at rest the
     /// sensor's real noise shows as a fine trace, like a seismograph, instead of a flat line.
-    private static func trace(_ points: [(time: Double, value: Double)], window: ClosedRange<Double>, minimumSpan: Double, columns: Int, rows: Int, color: TerminalColor) -> [String] {
+    private static func trace(
+        _ points: [(time: Double, value: Double)], window: ClosedRange<Double>, minimumSpan: Double, columns: Int,
+        rows: Int, color: TerminalColor
+    ) -> [String] {
         var canvas = BrailleCanvas(columns: columns, rows: rows)
         guard let low = points.map(\.value).min(), let high = points.map(\.value).max() else { return canvas.render() }
         let center = (low + high) / 2
         let half = max((high - low) / 2 * 1.3, minimumSpan / 2)
 
         func position(_ point: (time: Double, value: Double)) -> (x: Double, y: Double) {
-            let x = (point.time - window.lowerBound) / (window.upperBound - window.lowerBound) * Double(canvas.width - 1)
+            let x =
+                (point.time - window.lowerBound) / (window.upperBound - window.lowerBound) * Double(canvas.width - 1)
             let y = (1 - (point.value - (center - half)) / (2 * half)) * Double(canvas.height - 1)
             return (x, y)
         }
@@ -443,10 +484,14 @@ private struct DashboardView {
 
                 if abs(height) < 0.5 {
                     canvas[x, y] = Palette.white
-                } else if showsSky, [-20.0, 20].contains(where: { abs(worldY - (horizon + $0 / pitchRange * radius)) < 0.5 }), abs(worldX) < 2 {
+                } else if showsSky,
+                    [-20.0, 20].contains(where: { abs(worldY - (horizon + $0 / pitchRange * radius)) < 0.5 }),
+                    abs(worldX) < 2
+                {
                     canvas[x, y] = Palette.white.mixed(with: Palette.secondary, by: 0.5)
                 } else if height > 0 {
-                    canvas[x, y] = showsSky ? Palette.skyLow.mixed(with: Palette.skyHigh, by: height / (radius * 1.5)) : nil
+                    canvas[x, y] =
+                        showsSky ? Palette.skyLow.mixed(with: Palette.skyHigh, by: height / (radius * 1.5)) : nil
                 } else {
                     canvas[x, y] = Palette.groundHigh.mixed(with: Palette.groundLow, by: -height / (radius * 1.5))
                 }
@@ -470,7 +515,9 @@ private struct DashboardView {
         let radius = min(hinge.x - 2, hinge.y - 1)
         let length = radius * 0.8
 
-        func point(at degrees: Double, distance: Double, from origin: (x: Double, y: Double) = hinge) -> (x: Double, y: Double) {
+        func point(at degrees: Double, distance: Double, from origin: (x: Double, y: Double) = hinge) -> (
+            x: Double, y: Double
+        ) {
             let radians = degrees * .pi / 180
             return (origin.x + cos(radians) * distance, origin.y - sin(radians) * distance)
         }
@@ -490,7 +537,9 @@ private struct DashboardView {
     }
 
     /// A seismograph of vibration over `window`, with taps and gestures marked along the top.
-    private static func seismograph(_ points: [Point], markers: [Marker], window: ClosedRange<Double>, columns: Int, rows: Int) -> [String] {
+    private static func seismograph(
+        _ points: [Point], markers: [Marker], window: ClosedRange<Double>, columns: Int, rows: Int
+    ) -> [String] {
         var canvas = BrailleCanvas(columns: columns, rows: rows)
         guard canvas.width > 1 else { return canvas.render() }
         let peak = points.map(\.vibration).max() ?? 0

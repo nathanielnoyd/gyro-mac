@@ -219,8 +219,10 @@ final class GestureModel {
     /// Runs a gesture's actions now, as if it had been recognized.
     func testActions(of id: String) {
         guard let gesture = gesture(id) else { return }
-        let event = gesture.kind == .taps
-            ? MotionEvent(kind: .taps, time: sensors.motion.timestamp, count: gesture.signature.count ?? 1, features: [:])
+        let event =
+            gesture.kind == .taps
+            ? MotionEvent(
+                kind: .taps, time: sensors.motion.timestamp, count: gesture.signature.count ?? 1, features: [:])
             : MotionEvent(kind: .activity, time: sensors.motion.timestamp, features: [:])
         ActionRunner.run(gesture, event: event)
     }
@@ -232,7 +234,8 @@ final class GestureModel {
         do {
             try store.save(GestureStore.Contents(gestures: gestures, appliedCalibrations: appliedCalibrations))
         } catch {
-            saveError = "Your changes are kept while Gyro is open, but couldn't be written to disk. \(error.localizedDescription)"
+            saveError =
+                "Your changes are kept while Gyro is open, but couldn't be written to disk. \(error.localizedDescription)"
         }
     }
 
@@ -248,12 +251,17 @@ final class GestureModel {
     /// Starts recording more examples of an existing gesture.
     func startRecording(for id: String) {
         guard let gesture = gesture(id) else { return }
-        startSession(RecordingSession(gestureID: id, kind: gesture.kind, name: gesture.name, instructions: gesture.instructions, phase: .finished))
+        startSession(
+            RecordingSession(
+                gestureID: id, kind: gesture.kind, name: gesture.name, instructions: gesture.instructions,
+                phase: .finished))
     }
 
     /// Starts recording examples of a new gesture.
     func startRecordingNewGesture(of kind: MotionEvent.Kind) {
-        startSession(RecordingSession(gestureID: nil, kind: kind, name: "", instructions: Gesture.instructions(for: kind), phase: .finished))
+        startSession(
+            RecordingSession(
+                gestureID: nil, kind: kind, name: "", instructions: Gesture.instructions(for: kind), phase: .finished))
     }
 
     private func startSession(_ session: RecordingSession) {
@@ -283,7 +291,9 @@ final class GestureModel {
     }
 
     private func collectExample(_ event: MotionEvent) {
-        guard let session, event.kind == session.kind, let start = session.start, session.phase != .finished else { return }
+        guard let session, event.kind == session.kind, let start = session.start, session.phase != .finished else {
+            return
+        }
         if GestureCalibration.isExample(event, of: session.kind, from: start) {
             self.session?.examples.append(event)
         }
@@ -322,8 +332,11 @@ final class GestureModel {
         if let id = session.gestureID, let existing = self.gesture(id) {
             gesture = existing
         } else {
-            let signature = GestureSignature(fitting: session.examples) ?? GestureSignature(kind: session.kind, ranges: [:])
-            gesture = Gesture(name: session.name.trimmingCharacters(in: .whitespaces), kind: session.kind, examples: [], signature: signature)
+            let signature =
+                GestureSignature(fitting: session.examples) ?? GestureSignature(kind: session.kind, ranges: [:])
+            gesture = Gesture(
+                name: session.name.trimmingCharacters(in: .whitespaces), kind: session.kind, examples: [],
+                signature: signature)
             gestures.append(gesture)
         }
 
@@ -332,7 +345,8 @@ final class GestureModel {
             let file = try store.save(raw, for: gesture.presetID ?? "custom")
             gesture.recordings.append(GestureRecording(file: file, examplesFrom: start, examplesUntil: end))
         } catch {
-            saveError = "The examples were saved, but not the raw recording, so they can't be measured again if Gyro's detector changes. \(error.localizedDescription)"
+            saveError =
+                "The examples were saved, but not the raw recording, so they can't be measured again if Gyro's detector changes. \(error.localizedDescription)"
         }
         gesture.refit()
         if let index = gestures.firstIndex(where: { $0.id == gesture.id }) {
@@ -363,7 +377,8 @@ final class GestureModel {
             try result.save(in: store.directory)
         } catch {
             // The gestures are still fitted below; only the calibration's record is lost.
-            saveError = "The gestures were calibrated, but the calibration's record couldn't be saved. \(error.localizedDescription)"
+            saveError =
+                "The gestures were calibrated, but the calibration's record couldn't be saved. \(error.localizedDescription)"
         }
         apply(result)
     }

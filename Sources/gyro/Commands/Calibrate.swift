@@ -23,7 +23,9 @@ struct Calibrate: AsyncParsableCommand {
     @Option(name: .long, help: "Save in this folder instead of the Gyro app's.")
     var directory: String?
 
-    @Option(name: .long, parsing: .upToNextOption, help: "Only these gestures: \(GesturePreset.all.map(\.id).joined(separator: ", ")).")
+    @Option(
+        name: .long, parsing: .upToNextOption,
+        help: "Only these gestures: \(GesturePreset.all.map(\.id).joined(separator: ", ")).")
     var only: [String] = []
 
     @Option(name: .shortAndLong, help: "How many times to perform each tap gesture.")
@@ -62,7 +64,8 @@ struct Calibrate: AsyncParsableCommand {
         defer { reader.cancel() }
 
         print(Style.bold("Gesture calibration"))
-        print("""
+        print(
+            """
             Put the Mac where you usually use it. For each gesture you'll get instructions,
             then a countdown. Between gestures, keep your hands off the Mac and desk.
             """)
@@ -74,9 +77,11 @@ struct Calibrate: AsyncParsableCommand {
             print(Style.bold(Style.cyan("\(index + 1) of \(presets.count) · \(preset.name)")))
             print(preset.instructions)
             let isTaps = preset.signature.kind == .taps
-            print(Style.dim(isTaps
-                ? "Do it \(repetitions) times, waiting about 2 seconds between each."
-                : "Keep it up for \(Int(duration)) seconds, until it says stop."))
+            print(
+                Style.dim(
+                    isTaps
+                        ? "Do it \(repetitions) times, waiting about 2 seconds between each."
+                        : "Keep it up for \(Int(duration)) seconds, until it says stop."))
             if preset.id.hasSuffix("typing") {
                 print(Style.dim("Type anywhere; what you type here is ignored."))
             }
@@ -90,7 +95,8 @@ struct Calibrate: AsyncParsableCommand {
             let start = session.begin()
             let events = isTaps ? try await recordTaps(session) : try await recordActivity(session)
             let end = session.end()
-            calibration.sections.append(.init(gesture: preset.id, recording: recordingName, start: start, end: end, examples: events))
+            calibration.sections.append(
+                .init(gesture: preset.id, recording: recordingName, start: start, end: end, examples: events))
 
             try await holdStill(session, seconds: 2)
         }
@@ -135,7 +141,9 @@ struct Calibrate: AsyncParsableCommand {
             try await Task.sleep(for: .milliseconds(100))
             for event in session.takeEvents() where event.kind == .taps {
                 events.append(event)
-                print("  " + Style.green("●") + " \(events.count)  " + Self.describe(tap: event, recognizer: session.recognizer))
+                print(
+                    "  " + Style.green("●") + " \(events.count)  "
+                        + Self.describe(tap: event, recognizer: session.recognizer))
             }
             if events.count >= repetitions {
                 // Leave a moment in case the last tap was part of a group.
@@ -171,9 +179,12 @@ struct Calibrate: AsyncParsableCommand {
             }
             let filled = Int(min(elapsed / duration, 1) * 24)
             let bar = String(repeating: "█", count: filled) + String(repeating: "░", count: 24 - filled)
-            let detail = latest.map { e in
-                [MotionFeature.impacts, .impactStrength, .vibration, .turning].compactMap { f in e[f].map { "\(f.title.lowercased()) \(f.format($0))" } }.joined(separator: " · ")
-            } ?? ""
+            let detail =
+                latest.map { e in
+                    [MotionFeature.impacts, .impactStrength, .vibration, .turning].compactMap { f in
+                        e[f].map { "\(f.title.lowercased()) \(f.format($0))" }
+                    }.joined(separator: " · ")
+                } ?? ""
             print("\r\u{1B}[K  \(bar)  \(Style.dim(detail))", terminator: "")
             fflush(stdout)
             if elapsed >= duration { break }
@@ -224,7 +235,9 @@ struct Calibrate: AsyncParsableCommand {
     private static func describe(tap: MotionEvent, recognizer: GestureRecognizer) -> String {
         let count = tap.count == 1 ? "1 tap " : "\(tap.count) taps"
         let strength = tap[.strength].map(MotionFeature.strength.format) ?? ""
-        let rock = [MotionFeature.rockX, .rockY].compactMap { f in tap[f].map { "\(f == .rockX ? "x" : "y") \(f.format($0))" } }.joined(separator: " ")
+        let rock = [MotionFeature.rockX, .rockY].compactMap { f in
+            tap[f].map { "\(f == .rockX ? "x" : "y") \(f.format($0))" }
+        }.joined(separator: " ")
         let spin = tap[.spin].map(MotionFeature.spin.format) ?? ""
         let match = name(recognizer.bestMatch(for: tap)?.id)
         return "\(count)  \(strength)  spin \(spin)  rock \(rock)  " + Style.dim("→ \(match)")
@@ -239,7 +252,8 @@ struct Calibrate: AsyncParsableCommand {
         let correct = recognizedAs.filter { $0 == preset.id }.count
         let mark = events.isEmpty ? Style.yellow("–") : correct * 2 > events.count ? Style.green("✓") : Style.red("✗")
 
-        let features: [MotionFeature] = preset.signature.kind == .taps
+        let features: [MotionFeature] =
+            preset.signature.kind == .taps
             ? [.strength, .spin, .rockX, .rockY, .length]
             : [.impacts, .impactStrength, .vibration, .rumble, .turning]
         let medians = features.compactMap { feature -> String? in

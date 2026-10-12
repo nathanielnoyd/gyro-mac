@@ -187,7 +187,8 @@ public struct MotionEventDetector: Sendable {
                 finishJolt()
             }
         } else if level > max(threshold, echo(at: time)), elapsed > Self.warmUp {
-            jolt = Jolt(start: time, peak: level, acceleration: recentAcceleration + [reading], rotation: recentRotation)
+            jolt = Jolt(
+                start: time, peak: level, acceleration: recentAcceleration + [reading], rotation: recentRotation)
             recentAcceleration.removeAll(keepingCapacity: true)
             recentRotation.removeAll(keepingCapacity: true)
         } else {
@@ -355,7 +356,7 @@ public struct MotionEventDetector: Sendable {
     static func firstSwing(_ values: [Vector3]) -> Vector3 {
         let magnitudes = values.map(\.magnitude)
         guard let peak = magnitudes.max(), peak > 0,
-              var index = magnitudes.firstIndex(where: { $0 >= peak / 2 })
+            var index = magnitudes.firstIndex(where: { $0 >= peak / 2 })
         else { return .zero }
         while index + 1 < magnitudes.count, magnitudes[index + 1] > magnitudes[index] {
             index += 1
@@ -429,12 +430,15 @@ public struct MotionEventDetector: Sendable {
         let vibration = total(\.vibration)
         let impacts = total(\.impacts)
 
-        return MotionEvent(kind: .activity, time: time, features: [
-            .impacts: Double(impacts) / configuration.activityWindow,
-            .impactStrength: impacts > 0 ? total(\.impactStrength) / Double(impacts) : MotionFeature.impactStrength.domain.lowerBound,
-            .vibration: log10(max((vibration / accelerationCount).squareRoot(), 1e-4)),
-            .rumble: vibration > 0 ? min((total(\.rumble) / vibration).squareRoot(), 1) : 0,
-            .turning: log10(max((total(\.turning) / rotationCount).squareRoot(), 0.01)),
-        ])
+        return MotionEvent(
+            kind: .activity, time: time,
+            features: [
+                .impacts: Double(impacts) / configuration.activityWindow,
+                .impactStrength: impacts > 0
+                    ? total(\.impactStrength) / Double(impacts) : MotionFeature.impactStrength.domain.lowerBound,
+                .vibration: log10(max((vibration / accelerationCount).squareRoot(), 1e-4)),
+                .rumble: vibration > 0 ? min((total(\.rumble) / vibration).squareRoot(), 1) : 0,
+                .turning: log10(max((total(\.turning) / rotationCount).squareRoot(), 0.01)),
+            ])
     }
 }

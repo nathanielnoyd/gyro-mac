@@ -15,9 +15,10 @@ struct LiveEventsView: View {
                 ContentUnavailableView {
                     Label("Nothing Yet", systemImage: "hand.tap")
                 } description: {
-                    Text(sensors.isMotionLive
-                        ? "Tap the palm rest or start typing."
-                        : "Turn on the motion sensors in the main window to see taps and gestures here.")
+                    Text(
+                        sensors.isMotionLive
+                            ? "Tap the palm rest or start typing."
+                            : "Turn on the motion sensors in the main window to see taps and gestures here.")
                 }
                 .frame(maxHeight: .infinity)
             } else {

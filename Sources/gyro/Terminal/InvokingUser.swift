@@ -24,7 +24,9 @@ enum InvokingUser {
     }
 
     static func giveOwnership(of url: URL) {
-        guard let uid = environment["SUDO_UID"].flatMap(uid_t.init), let gid = environment["SUDO_GID"].flatMap(gid_t.init) else { return }
+        guard let uid = environment["SUDO_UID"].flatMap(uid_t.init),
+            let gid = environment["SUDO_GID"].flatMap(gid_t.init)
+        else { return }
         chown(url.path, uid, gid)
     }
 }

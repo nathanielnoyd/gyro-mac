@@ -1,5 +1,6 @@
 import Foundation
 import Testing
+
 @testable import GyroKit
 
 struct MotionEventDetectorTests {
@@ -212,7 +213,8 @@ struct GestureSignatureTests {
         let signature = try #require(GestureSignature(fitting: examples))
         #expect(signature.count == 1)
         for example in examples {
-            #expect(signature.distance(to: MotionEvent(kind: .taps, time: 0, count: 1, features: example.features)) != nil)
+            #expect(
+                signature.distance(to: MotionEvent(kind: .taps, time: 0, count: 1, features: example.features)) != nil)
         }
         let strength = try #require(signature.ranges[.strength])
         #expect(strength.lowerBound < -1.5 - 0.2 && strength.upperBound > -1.3 + 0.2)
@@ -286,7 +288,9 @@ struct SyntheticMac {
         var elapsed = 0.0
         var key = 0
         while elapsed < seconds {
-            tap(strength: strength * (0.8 + 0.4 * Double(key % 3) / 2), rock: .zero, push: Vector3(x: 0.2, y: 0, z: 1).normalized, frequency: 150, decay: 0.005, tail: 0)
+            tap(
+                strength: strength * (0.8 + 0.4 * Double(key % 3) / 2), rock: .zero,
+                push: Vector3(x: 0.2, y: 0, z: 1).normalized, frequency: 150, decay: 0.005, tail: 0)
             let gap = 0.06 + 0.04 * Double(key % 4)
             rest(gap)
             elapsed += 0.08 + gap
@@ -326,7 +330,8 @@ struct SimulatedGestureTests {
         for step in 0..<Int(SimulatedMotion.period * rate) {
             let time = Double(step) / rate
             let (acceleration, rotationRate) = SimulatedMotion.reading(at: time)
-            let events = detector.process(MotionSample(kind: .acceleration, value: acceleration, timestamp: time))
+            let events =
+                detector.process(MotionSample(kind: .acceleration, value: acceleration, timestamp: time))
                 + detector.process(MotionSample(kind: .rotationRate, value: rotationRate, timestamp: time))
             for event in events {
                 for recognition in recognizer.recognize(event) {
@@ -347,9 +352,11 @@ struct GestureCalibrationTests {
         let directory = FileManager.default.temporaryDirectory.appending(path: UUID().uuidString)
         defer { try? FileManager.default.removeItem(at: directory) }
 
-        let older = GestureCalibration(date: Date(timeIntervalSince1970: 1_000), sections: [
-            .init(gesture: "tap-left", recording: "a.csv", start: 0, end: 5, examples: [tap(-0.6)]),
-        ])
+        let older = GestureCalibration(
+            date: Date(timeIntervalSince1970: 1_000),
+            sections: [
+                .init(gesture: "tap-left", recording: "a.csv", start: 0, end: 5, examples: [tap(-0.6)])
+            ])
         let newer = GestureCalibration(date: Date(timeIntervalSince1970: 2_000))
         try newer.save(in: directory)
         try older.save(in: directory)
@@ -365,7 +372,9 @@ struct GestureCalibrationTests {
             .init(gesture: "right", recording: "r.csv", start: 10, end: 20, examples: [tap(0.4), tap(0.3), tap(0.5)]),
         ])
         // Before calibrating, both gestures accept anything.
-        let candidates = ["left", "right"].map { GestureRecognizer.Candidate(id: $0, signature: GestureSignature(kind: .taps, ranges: [:])) }
+        let candidates = ["left", "right"].map {
+            GestureRecognizer.Candidate(id: $0, signature: GestureSignature(kind: .taps, ranges: [:]))
+        }
         let results = calibration.check(against: candidates)
         #expect(results["left"] == ["left", "left", "left"])
         #expect(results["right"] == ["right", "right", "right"])

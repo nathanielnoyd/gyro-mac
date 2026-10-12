@@ -1,12 +1,15 @@
 import AppKit
 import GyroKit
-import os
 import UserNotifications
+import os
 
 /// Carries out a gesture's actions.
 enum ActionRunner {
     /// The sounds in /System/Library/Sounds.
-    static let sounds = ["Basso", "Blow", "Bottle", "Frog", "Funk", "Glass", "Hero", "Morse", "Ping", "Pop", "Purr", "Sosumi", "Submarine", "Tink"]
+    static let sounds = [
+        "Basso", "Blow", "Bottle", "Frog", "Funk", "Glass", "Hero", "Morse", "Ping", "Pop", "Purr", "Sosumi",
+        "Submarine", "Tink",
+    ]
 
     /// Posted to every app on the Mac whenever a gesture is recognized, with the gesture's
     /// `id` and `name` in its user info. Scripts and other apps can listen for it.
@@ -74,7 +77,8 @@ enum ActionRunner {
         guard (try? await center.requestAuthorization(options: [.alert, .sound])) == true else { return }
         let content = UNMutableNotificationContent()
         content.title = gesture.name
-        content.body = event.kind == .taps ? "Detected \(event.count == 1 ? "a tap" : "\(event.count) taps")." : "Started."
+        content.body =
+            event.kind == .taps ? "Detected \(event.count == 1 ? "a tap" : "\(event.count) taps")." : "Started."
         try? await center.add(UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil))
     }
 
@@ -96,7 +100,9 @@ enum ActionRunner {
         process.standardError = FileHandle.nullDevice
         process.terminationHandler = { process in
             if process.terminationStatus != 0 {
-                log.error("\(executable, privacy: .public) exited with status \(process.terminationStatus) for \(gesture.name, privacy: .public)")
+                log.error(
+                    "\(executable, privacy: .public) exited with status \(process.terminationStatus) for \(gesture.name, privacy: .public)"
+                )
             }
         }
         do {

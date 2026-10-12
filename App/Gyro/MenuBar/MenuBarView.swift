@@ -34,7 +34,8 @@ struct MenuBarView: View {
                         .toggleStyle(.switch)
                         .controlSize(.small)
                     if let entry = gestures.log.first(where: { $0.gestureID != nil && $0.phase != .ended }),
-                       let gesture = gestures.gesture(entry.gestureID) {
+                        let gesture = gestures.gesture(entry.gestureID)
+                    {
                         Label {
                             Text("\(gesture.name), \(entry.date, format: .relative(presentation: .named))")
                         } icon: {

@@ -11,7 +11,10 @@ enum IORegistry {
         _ body: (io_service_t) throws -> Bool
     ) rethrows {
         var iterator: io_iterator_t = 0
-        guard IOServiceGetMatchingServices(kIOMainPortDefault, IOServiceMatching(className), &iterator) == kIOReturnSuccess else {
+        guard
+            IOServiceGetMatchingServices(kIOMainPortDefault, IOServiceMatching(className), &iterator)
+                == kIOReturnSuccess
+        else {
             return
         }
         defer { IOObjectRelease(iterator) }

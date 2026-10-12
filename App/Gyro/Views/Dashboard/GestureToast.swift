@@ -51,7 +51,9 @@ struct GestureToast: View {
     }
 
     private func detail(_ entry: GestureModel.LogEntry, gesture: Gesture) -> String {
-        let actions = gesture.actions.isEmpty || !gestures.actionsAreLive ? "" : " · ran \(gesture.actions.count == 1 ? "1 action" : "\(gesture.actions.count) actions")"
+        let actions =
+            gesture.actions.isEmpty || !gestures.actionsAreLive
+            ? "" : " · ran \(gesture.actions.count == 1 ? "1 action" : "\(gesture.actions.count) actions")"
         switch entry.event.kind {
         case .taps:
             let strength = entry.event[.strength].map(MotionFeature.strength.format) ?? ""

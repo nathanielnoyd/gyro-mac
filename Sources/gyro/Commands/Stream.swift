@@ -74,7 +74,9 @@ private struct RowWriter {
     func writeHeader() {
         switch format {
         case .table:
-            emit(Self.columns.enumerated().map { index, column in Self.headerStyle(index)(column.leftPadded(to: 9)) }.joined())
+            emit(
+                Self.columns.enumerated().map { index, column in Self.headerStyle(index)(column.leftPadded(to: 9)) }
+                    .joined())
         case .csv:
             emit(Self.columns.joined(separator: ","))
         case .json:

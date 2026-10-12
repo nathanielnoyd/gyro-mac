@@ -42,7 +42,9 @@ public struct GestureCalibration: Codable, Hashable, Sendable, Identifiable {
     /// A file-name-friendly local timestamp, such as 2026-10-06-201645.
     public static func stamp(for date: Date) -> String {
         let c = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute, .second], from: date)
-        return String(format: "%04d-%02d-%02d-%02d%02d%02d", c.year ?? 0, c.month ?? 0, c.day ?? 0, c.hour ?? 0, c.minute ?? 0, c.second ?? 0)
+        return String(
+            format: "%04d-%02d-%02d-%02d%02d%02d", c.year ?? 0, c.month ?? 0, c.day ?? 0, c.hour ?? 0, c.minute ?? 0,
+            c.second ?? 0)
     }
 
     // MARK: - Examples
@@ -61,7 +63,9 @@ public struct GestureCalibration: Codable, Hashable, Sendable, Identifiable {
     ///
     /// Activity summaries cover the stretch before them, so the first ones are skipped
     /// until the summary lies entirely inside the performance.
-    public static func isExample(_ event: MotionEvent, of kind: MotionEvent.Kind, from start: Double, until end: Double = .infinity) -> Bool {
+    public static func isExample(
+        _ event: MotionEvent, of kind: MotionEvent.Kind, from start: Double, until end: Double = .infinity
+    ) -> Bool {
         let settle = kind == .activity ? MotionEventDetector.Configuration().activityWindow : 0
         return event.kind == kind && event.time >= start + settle && event.time <= end
     }
@@ -132,7 +136,8 @@ public struct GestureCalibration: Codable, Hashable, Sendable, Identifiable {
     public static func all(in directory: URL) -> [GestureCalibration] {
         let folder = calibrationsDirectory(in: directory)
         let files = (try? FileManager.default.contentsOfDirectory(at: folder, includingPropertiesForKeys: nil)) ?? []
-        return files
+        return
+            files
             .filter { $0.pathExtension == "json" }
             .compactMap { try? decoder.decode(GestureCalibration.self, from: Data(contentsOf: $0)) }
             .sorted { $0.date < $1.date }

@@ -71,7 +71,8 @@ struct DashboardView: View {
     private var markers: [VibrationPanel.Marker] {
         gestures.log.compactMap { entry in
             guard entry.event.kind == .taps || entry.phase == .began else { return nil }
-            return VibrationPanel.Marker(id: entry.id, time: entry.event.time, symbol: gestures.gesture(entry.gestureID)?.symbol)
+            return VibrationPanel.Marker(
+                id: entry.id, time: entry.event.time, symbol: gestures.gesture(entry.gestureID)?.symbol)
         }
     }
 

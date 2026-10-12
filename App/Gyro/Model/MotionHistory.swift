@@ -18,7 +18,10 @@ struct MotionHistory {
     private(set) var points: [Point] = []
 
     mutating func append(_ snapshot: MotionSnapshot, vibration: Double) {
-        points.append(Point(time: snapshot.timestamp, acceleration: snapshot.acceleration, rotationRate: snapshot.rotationRate, vibration: vibration))
+        points.append(
+            Point(
+                time: snapshot.timestamp, acceleration: snapshot.acceleration, rotationRate: snapshot.rotationRate,
+                vibration: vibration))
         let cutoff = snapshot.timestamp - duration
         if let firstKept = points.firstIndex(where: { $0.time >= cutoff }), firstKept > 0 {
             points.removeFirst(firstKept)

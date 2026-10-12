@@ -44,7 +44,9 @@ struct VibrationPanel: View {
                             yEnd: .value("Vibration", point.vibration)
                         )
                         .foregroundStyle(
-                            LinearGradient(colors: [Self.color.opacity(0.55), Self.color.opacity(0.05)], startPoint: .top, endPoint: .bottom)
+                            LinearGradient(
+                                colors: [Self.color.opacity(0.55), Self.color.opacity(0.05)], startPoint: .top,
+                                endPoint: .bottom)
                         )
                         LineMark(
                             x: .value("Time", point.time),

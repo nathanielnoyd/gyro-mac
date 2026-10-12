@@ -11,10 +11,12 @@ struct SetupPanel: View {
             VStack(alignment: .leading, spacing: 14) {
                 Text("Turn on the accelerometer and gyroscope")
                     .font(.title3.weight(.semibold))
-                Text("macOS only shares them with privileged software, so Gyro includes a small helper that reads them and passes the data to this app. Nothing leaves your Mac.")
-                    .font(.callout)
-                    .foregroundStyle(.secondary)
-                    .fixedSize(horizontal: false, vertical: true)
+                Text(
+                    "macOS only shares them with privileged software, so Gyro includes a small helper that reads them and passes the data to this app. Nothing leaves your Mac."
+                )
+                .font(.callout)
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
 
                 if let message {
                     Label(message, systemImage: "exclamationmark.triangle.fill")

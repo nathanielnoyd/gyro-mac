@@ -1,5 +1,6 @@
 import Foundation
 import Testing
+
 @testable import GyroKit
 
 struct FusionTests {
@@ -30,7 +31,8 @@ struct FusionTests {
         // Rotating at 90°/s about z for one second, with gravity along z, should yield 90° of yaw.
         var filter = MahonyFilter()
         for _ in 0..<1_000 {
-            filter.update(rotationRate: Vector3(x: 0, y: 0, z: 90.radians), acceleration: Vector3(x: 0, y: 0, z: 1), dt: 0.001)
+            filter.update(
+                rotationRate: Vector3(x: 0, y: 0, z: 90.radians), acceleration: Vector3(x: 0, y: 0, z: 1), dt: 0.001)
         }
         #expect(abs(filter.attitude.yaw - 90) < 0.5)
     }

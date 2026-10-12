@@ -31,78 +31,92 @@ public struct GesturePreset: Identifiable, Hashable, Sendable {
             name: "Tap Left",
             symbol: "hand.point.left",
             instructions: "Tap the palm rest to the left of the trackpad once, then pause.",
-            signature: GestureSignature(kind: .taps, count: 1, ranges: [
-                .strength: log10(0.012)...1,
-                .spin: log10(3.5)...3,
-                .rockX: -1 ... -0.3,
-                .rockY: -1 ... -0.1,
-            ])
+            signature: GestureSignature(
+                kind: .taps, count: 1,
+                ranges: [
+                    .strength: log10(0.012)...1,
+                    .spin: log10(3.5)...3,
+                    .rockX: -1 ... -0.3,
+                    .rockY: -1 ... -0.1,
+                ])
         ),
         GesturePreset(
             id: "tap-right",
             name: "Tap Right",
             symbol: "hand.point.right",
             instructions: "Tap the palm rest to the right of the trackpad once, then pause.",
-            signature: GestureSignature(kind: .taps, count: 1, ranges: [
-                .strength: log10(0.012)...1,
-                .spin: log10(3.5)...3,
-                .rockX: 0.3...1,
-                .rockY: 0.1...1,
-            ])
+            signature: GestureSignature(
+                kind: .taps, count: 1,
+                ranges: [
+                    .strength: log10(0.012)...1,
+                    .spin: log10(3.5)...3,
+                    .rockX: 0.3...1,
+                    .rockY: 0.1...1,
+                ])
         ),
         GesturePreset(
             id: "double-tap",
             name: "Double Tap",
             symbol: "hand.tap",
             instructions: "Tap the Mac twice in quick succession, then pause.",
-            signature: GestureSignature(kind: .taps, count: 2, ranges: [
-                .strength: log10(0.015)...1,
-                .spin: log10(2.4)...log10(12),
-                .length: log10(0.06)...log10(0.28),
-            ])
+            signature: GestureSignature(
+                kind: .taps, count: 2,
+                ranges: [
+                    .strength: log10(0.015)...1,
+                    .spin: log10(2.4)...log10(12),
+                    .length: log10(0.06)...log10(0.28),
+                ])
         ),
         GesturePreset(
             id: "soft-typing",
             name: "Soft Typing",
             symbol: "keyboard",
             instructions: "Type the way you usually do.",
-            signature: GestureSignature(kind: .activity, ranges: [
-                .impacts: 1.5...20,
-                .impactStrength: log10(0.004)...log10(0.028),
-                .turning: -2...log10(3),
-            ])
+            signature: GestureSignature(
+                kind: .activity,
+                ranges: [
+                    .impacts: 1.5...20,
+                    .impactStrength: log10(0.004)...log10(0.028),
+                    .turning: -2...log10(3),
+                ])
         ),
         GesturePreset(
             id: "hard-typing",
             name: "Hard Typing",
             symbol: "hammer",
             instructions: "Type hard, as if the keyboard owes you money.",
-            signature: GestureSignature(kind: .activity, ranges: [
-                .impacts: 1.5...20,
-                .impactStrength: log10(0.028)...log10(0.1),
-                .vibration: -4...log10(0.04),
-                .turning: -2...log10(5),
-            ])
+            signature: GestureSignature(
+                kind: .activity,
+                ranges: [
+                    .impacts: 1.5...20,
+                    .impactStrength: log10(0.028)...log10(0.1),
+                    .vibration: -4...log10(0.04),
+                    .turning: -2...log10(5),
+                ])
         ),
         GesturePreset(
             id: "desk-shake",
             name: "Shake the Desk",
             symbol: "water.waves",
             instructions: "Shake or wobble the desk the Mac sits on.",
-            signature: GestureSignature(kind: .activity, ranges: [
-                .vibration: log10(0.025)...1,
-                .rumble: 0.6...1,
-                .turning: -2...log10(8),
-            ])
+            signature: GestureSignature(
+                kind: .activity,
+                ranges: [
+                    .vibration: log10(0.025)...1,
+                    .rumble: 0.6...1,
+                    .turning: -2...log10(8),
+                ])
         ),
         GesturePreset(
             id: "pick-up",
             name: "Pick Up",
             symbol: "arrow.up.and.down.and.arrow.left.and.right",
             instructions: "Pick the Mac up and move it around.",
-            signature: GestureSignature(kind: .activity, ranges: [
-                .turning: log10(25)...3,
-            ])
+            signature: GestureSignature(
+                kind: .activity,
+                ranges: [
+                    .turning: log10(25)...3
+                ])
         ),
     ]
 }

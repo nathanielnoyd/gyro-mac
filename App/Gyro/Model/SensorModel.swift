@@ -136,7 +136,8 @@ final class SensorModel {
 
     /// Publishes one frame, and returns how long to wait before the next, or `nil` to stop.
     private func publishFrame(_ frame: Int) -> Duration? {
-        if motionStatus == .connecting, let connectingSince, connectingSince.duration(to: .now) > Self.connectionTimeout {
+        if motionStatus == .connecting, let connectingSince, connectingSince.duration(to: .now) > Self.connectionTimeout
+        {
             streamTask?.cancel()
             log.notice("The helper didn't answer within \(Self.connectionTimeout, privacy: .public)")
             motionStatus = .unreachable

@@ -36,7 +36,9 @@ struct GestureStore {
             // Move the file aside so the next save doesn't overwrite the user's gestures.
             let backup = directory.appending(path: "Gestures-unreadable-\(GestureCalibration.stamp(for: .now)).json")
             try? FileManager.default.moveItem(at: fileURL, to: backup)
-            log.error("Couldn't read saved gestures, moved them to \(backup.lastPathComponent, privacy: .public): \(error.localizedDescription, privacy: .public)")
+            log.error(
+                "Couldn't read saved gestures, moved them to \(backup.lastPathComponent, privacy: .public): \(error.localizedDescription, privacy: .public)"
+            )
         }
 
         let presets = GesturePreset.all.map { preset in
@@ -79,9 +81,12 @@ struct GestureStore {
         guard !gesture.recordings.isEmpty else { return gesture }
         var gesture = gesture
         gesture.examples = gesture.recordings.flatMap { recording -> [MotionEvent] in
-            guard let raw = try? MotionRecording(contentsOf: recordingsDirectory.appending(path: recording.file)) else { return [] }
+            guard let raw = try? MotionRecording(contentsOf: recordingsDirectory.appending(path: recording.file)) else {
+                return []
+            }
             return raw.events().filter {
-                GestureCalibration.isExample($0, of: gesture.kind, from: recording.examplesFrom, until: recording.examplesUntil)
+                GestureCalibration.isExample(
+                    $0, of: gesture.kind, from: recording.examplesFrom, until: recording.examplesUntil)
             }
         }
         gesture.refit()

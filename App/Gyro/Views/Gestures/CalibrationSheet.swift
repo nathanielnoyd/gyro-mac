@@ -107,9 +107,11 @@ struct CalibrationSheet: View {
 
     private var intro: some View {
         VStack(alignment: .leading, spacing: 14) {
-            Text("Put the Mac where you usually use it. Gyro will ask for each gesture in turn: read the instructions, press Start, and perform it when the countdown ends. Between gestures, keep your hands off the Mac and the desk.")
-                .foregroundStyle(.secondary)
-                .fixedSize(horizontal: false, vertical: true)
+            Text(
+                "Put the Mac where you usually use it. Gyro will ask for each gesture in turn: read the instructions, press Start, and perform it when the countdown ends. Between gestures, keep your hands off the Mac and the desk."
+            )
+            .foregroundStyle(.secondary)
+            .fixedSize(horizontal: false, vertical: true)
 
             List {
                 ForEach(session.available) { gesture in
@@ -134,10 +136,12 @@ struct CalibrationSheet: View {
                 .font(.title3)
                 .multilineTextAlignment(.center)
                 .fixedSize(horizontal: false, vertical: true)
-            Text(gesture.kind == .taps
-                ? "Do it \(GestureCalibration.repetitions) times, waiting about 2 seconds between each."
-                : "Keep it up for \(Int(GestureCalibration.activityDuration)) seconds, until the bar fills.")
-                .foregroundStyle(.secondary)
+            Text(
+                gesture.kind == .taps
+                    ? "Do it \(GestureCalibration.repetitions) times, waiting about 2 seconds between each."
+                    : "Keep it up for \(Int(GestureCalibration.activityDuration)) seconds, until the bar fills."
+            )
+            .foregroundStyle(.secondary)
             if !sensors.isMotionLive {
                 MotionOffWarning()
             }
@@ -152,9 +156,13 @@ struct CalibrationSheet: View {
                 .foregroundStyle(.green)
             switch gesture.kind {
             case .taps:
-                TapProgress(examples: session.examples, target: GestureCalibration.repetitions, discardLast: session.discardLastExample)
+                TapProgress(
+                    examples: session.examples, target: GestureCalibration.repetitions,
+                    discardLast: session.discardLastExample)
             case .activity:
-                ActivityProgress(stage: .recording(until: until), count: session.examples.count, duration: GestureCalibration.activityDuration)
+                ActivityProgress(
+                    stage: .recording(until: until), count: session.examples.count,
+                    duration: GestureCalibration.activityDuration)
             }
             LevelMeter(vibration: sensors.history.points.last?.vibration ?? 0)
         }
@@ -163,7 +171,9 @@ struct CalibrationSheet: View {
     private var summary: some View {
         VStack(alignment: .leading, spacing: 12) {
             if session.calibration.sections.isEmpty {
-                ContentUnavailableView("Nothing Recorded", systemImage: "hand.raised.slash", description: Text("Every gesture was skipped or no examples were detected."))
+                ContentUnavailableView(
+                    "Nothing Recorded", systemImage: "hand.raised.slash",
+                    description: Text("Every gesture was skipped or no examples were detected."))
             } else {
                 Text("Once each gesture is fitted to its examples, they're recognized like this:")
                     .foregroundStyle(.secondary)

@@ -35,8 +35,8 @@ public struct MotionRecording: Hashable, Sendable {
             if index == 0, line == Self.csvHeader { continue }
             let fields = line.split(separator: ",")
             guard fields.count == 5,
-                  let time = Double(fields[0]),
-                  let x = Double(fields[2]), let y = Double(fields[3]), let z = Double(fields[4])
+                let time = Double(fields[0]),
+                let x = Double(fields[2]), let y = Double(fields[3]), let z = Double(fields[4])
             else { throw GyroError.invalidRecording(line: index + 1) }
             let kind: MotionSample.Kind
             switch fields[1] {

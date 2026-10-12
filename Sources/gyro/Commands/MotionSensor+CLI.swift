@@ -11,10 +11,11 @@ extension MotionSensor {
         do {
             return try samples()
         } catch .requiresRoot {
-            throw CLIError(description: """
-                The accelerometer and gyroscope only report to root. Run:
-                  sudo gyro \(subcommand)
-                """)
+            throw CLIError(
+                description: """
+                    The accelerometer and gyroscope only report to root. Run:
+                      sudo gyro \(subcommand)
+                    """)
         }
     }
 }

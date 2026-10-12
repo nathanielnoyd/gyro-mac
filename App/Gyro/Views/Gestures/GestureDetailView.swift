@@ -83,10 +83,12 @@ struct GestureDetailView: View {
         } header: {
             Text("Recognition")
         } footer: {
-            Text(gesture.kind == .taps
-                ? "Bars show the range each measurement must fall in. The dot is the latest group of taps: green where it fits."
-                : "Bars show the range each measurement must fall in. The dot is the last moment of motion, updated four times a second.")
-                .foregroundStyle(.secondary)
+            Text(
+                gesture.kind == .taps
+                    ? "Bars show the range each measurement must fall in. The dot is the latest group of taps: green where it fits."
+                    : "Bars show the range each measurement must fall in. The dot is the last moment of motion, updated four times a second."
+            )
+            .foregroundStyle(.secondary)
         }
     }
 
@@ -94,7 +96,9 @@ struct GestureDetailView: View {
         Section("Examples") {
             LabeledContent("Trained on") {
                 if gesture.isTrained {
-                    Text("\(gesture.examples.count) examples from \(gesture.recordings.count) \(gesture.recordings.count == 1 ? "recording" : "recordings")")
+                    Text(
+                        "\(gesture.examples.count) examples from \(gesture.recordings.count) \(gesture.recordings.count == 1 ? "recording" : "recordings")"
+                    )
                 } else {
                     Text(gesture.isCustom ? "Nothing yet" : "Built-in guesses")
                         .foregroundStyle(.secondary)
@@ -155,10 +159,12 @@ private struct ActionsSection: View {
         } header: {
             Text("Actions")
         } footer: {
-            Text(gesture.kind == .taps
-                ? "Run each time the gesture is recognized."
-                : "Run when the motion starts.")
-                .foregroundStyle(.secondary)
+            Text(
+                gesture.kind == .taps
+                    ? "Run each time the gesture is recognized."
+                    : "Run when the motion starts."
+            )
+            .foregroundStyle(.secondary)
         }
         .task {
             shortcuts = await ActionRunner.shortcuts()

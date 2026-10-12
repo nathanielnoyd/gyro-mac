@@ -52,7 +52,8 @@ struct Lid: AsyncParsableCommand {
     private func meter(_ angle: Double) -> String {
         let width = 36
         let filled = Int((min(max(angle, 0), 180) / 180 * Double(width)).rounded())
-        let bar = Style.color(Palette.accent, String(repeating: "━", count: filled))
+        let bar =
+            Style.color(Palette.accent, String(repeating: "━", count: filled))
             + Style.color(Palette.border, String(repeating: "─", count: width - filled))
         return "  " + bar + "  " + Style.bold(String(format: "%3.0f°", angle)) + "  " + Style.dim(Self.describe(angle))
     }

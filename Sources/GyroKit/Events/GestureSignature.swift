@@ -30,7 +30,9 @@ public struct GestureSignature: Hashable, Sendable, Codable {
         return ranges.isEmpty ? 0 : (sumOfSquares / Double(ranges.count)).squareRoot()
     }
 
-    static func distance(of value: Double, from range: ClosedRange<Double>, in domain: ClosedRange<Double>, tolerance: Double) -> Double {
+    static func distance(
+        of value: Double, from range: ClosedRange<Double>, in domain: ClosedRange<Double>, tolerance: Double
+    ) -> Double {
         let middle = (range.lowerBound + range.upperBound) / 2
         let halfWidth = max((range.upperBound - range.lowerBound) / 2 * tolerance, 1e-6)
         if value < middle {

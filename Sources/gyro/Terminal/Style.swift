@@ -23,7 +23,9 @@ struct TerminalColor: Hashable {
         func mix(_ a: UInt8, _ b: UInt8) -> UInt8 {
             UInt8((Double(a) + (Double(b) - Double(a)) * min(max(amount, 0), 1)).rounded())
         }
-        return TerminalColor(mix(red, other.red), mix(green, other.green), mix(blue, other.blue), basic: amount < 0.5 ? basic : other.basic)
+        return TerminalColor(
+            mix(red, other.red), mix(green, other.green), mix(blue, other.blue),
+            basic: amount < 0.5 ? basic : other.basic)
     }
 
     fileprivate func sgr(background: Bool) -> String {
@@ -95,7 +97,9 @@ enum Style {
         guard isatty(STDOUT_FILENO) != 0, environment["NO_COLOR"] == nil else { return .none }
         let colorTerm = environment["COLORTERM"]?.lowercased() ?? ""
         let term = environment["TERM"]?.lowercased() ?? ""
-        if colorTerm == "truecolor" || colorTerm == "24bit" || ["direct", "truecolor", "ghostty", "kitty", "wezterm", "alacritty"].contains(where: term.contains) {
+        if colorTerm == "truecolor" || colorTerm == "24bit"
+            || ["direct", "truecolor", "ghostty", "kitty", "wezterm", "alacritty"].contains(where: term.contains)
+        {
             return .trueColor
         }
         return term.contains("256") ? .palette256 : .basic

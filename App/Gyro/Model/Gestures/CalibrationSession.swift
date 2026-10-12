@@ -117,7 +117,7 @@ final class CalibrationSession {
 
     func collect(_ event: MotionEvent) {
         guard case .recording = phase, let gesture = current,
-              GestureCalibration.isExample(event, of: gesture.kind, from: start)
+            GestureCalibration.isExample(event, of: gesture.kind, from: start)
         else { return }
         examples.append(event)
     }
@@ -129,9 +129,11 @@ final class CalibrationSession {
         if !examples.isEmpty {
             do {
                 let file = try store.save(raw, for: gesture.presetID ?? "custom")
-                calibration.sections.append(.init(gesture: gesture.id, recording: file, start: start, end: end, examples: examples))
+                calibration.sections.append(
+                    .init(gesture: gesture.id, recording: file, start: start, end: end, examples: examples))
             } catch {
-                failures.append("\(gesture.name) wasn't calibrated: its recording couldn't be saved. \(error.localizedDescription)")
+                failures.append(
+                    "\(gesture.name) wasn't calibrated: its recording couldn't be saved. \(error.localizedDescription)")
             }
         }
 

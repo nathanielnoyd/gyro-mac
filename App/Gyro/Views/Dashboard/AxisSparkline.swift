@@ -22,7 +22,8 @@ struct AxisSparkline: View {
                 yEnd: .value("Value", point[keyPath: value][axis])
             )
             .foregroundStyle(
-                LinearGradient(colors: [axis.color.opacity(0.32), axis.color.opacity(0)], startPoint: .top, endPoint: .bottom)
+                LinearGradient(
+                    colors: [axis.color.opacity(0.32), axis.color.opacity(0)], startPoint: .top, endPoint: .bottom)
             )
             .interpolationMethod(.monotone)
 

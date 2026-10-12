@@ -1,8 +1,8 @@
 import Foundation
 import GyroXPC
 import Observation
-import os
 import ServiceManagement
+import os
 
 private let log = Logger(subsystem: HelperService.appBundleIdentifier, category: "helper")
 
@@ -35,7 +35,8 @@ final class HelperInstaller {
     /// macOS can lose track of which app a helper belongs to, after the app is moved or
     /// rebuilt somewhere else. Then it neither starts the helper nor lets the app register it
     /// again, and only resetting its list of background items clears the stale record.
-    static let refusedMessage = "macOS wouldn't register Gyro's helper. Try installing it again. If it keeps failing, macOS may have lost track of it: run “sudo sfltool resetbtm” in Terminal, restart your Mac and install the helper again. That also asks you to approve other apps' background items again."
+    static let refusedMessage =
+        "macOS wouldn't register Gyro's helper. Try installing it again. If it keeps failing, macOS may have lost track of it: run “sudo sfltool resetbtm” in Terminal, restart your Mac and install the helper again. That also asks you to approve other apps' background items again."
 
     private(set) var state: State = .notInstalled
     private(set) var repair = Repair.none
@@ -48,12 +49,13 @@ final class HelperInstaller {
     func refresh() {
         // Unregistering mid-repair would read as "not installed" and stop motion for good.
         guard state != .repairing else { return }
-        state = switch service.status {
-        case .enabled: .installed
-        case .requiresApproval: .awaitingApproval
-        case .notRegistered, .notFound: .notInstalled
-        @unknown default: .notInstalled
-        }
+        state =
+            switch service.status {
+            case .enabled: .installed
+            case .requiresApproval: .awaitingApproval
+            case .notRegistered, .notFound: .notInstalled
+            @unknown default: .notInstalled
+            }
     }
 
     func install() {
@@ -137,7 +139,8 @@ final class HelperInstaller {
         process.arguments = ["-e", "do shell script \"\(command)\" with administrator privileges"]
         process.standardOutput = FileHandle.nullDevice
         process.standardError = FileHandle.nullDevice
-        let status = try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Int32, any Error>) in
+        let status = try await withCheckedThrowingContinuation {
+            (continuation: CheckedContinuation<Int32, any Error>) in
             process.terminationHandler = { continuation.resume(returning: $0.terminationStatus) }
             do {
                 try process.run()

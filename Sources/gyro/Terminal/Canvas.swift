@@ -39,7 +39,9 @@ struct BrailleCanvas {
         }
         for step in 0...steps {
             let t = Double(step) / Double(steps)
-            plot(Int((start.x + (end.x - start.x) * t).rounded()), Int((start.y + (end.y - start.y) * t).rounded()), color)
+            plot(
+                Int((start.x + (end.x - start.x) * t).rounded()), Int((start.y + (end.y - start.y) * t).rounded()),
+                color)
         }
     }
 
@@ -60,13 +62,14 @@ struct BrailleCanvas {
             }
             for column in 0..<columns {
                 let cell = row * columns + column
-                let (character, color): (Character, TerminalColor?) = if let glyph = glyphs[cell] {
-                    (glyph.0, glyph.1)
-                } else if dots[cell] == 0 {
-                    (" ", runColor)
-                } else {
-                    (Character(UnicodeScalar(0x2800 + UInt32(dots[cell]))!), colors[cell])
-                }
+                let (character, color): (Character, TerminalColor?) =
+                    if let glyph = glyphs[cell] {
+                        (glyph.0, glyph.1)
+                    } else if dots[cell] == 0 {
+                        (" ", runColor)
+                    } else {
+                        (Character(UnicodeScalar(0x2800 + UInt32(dots[cell]))!), colors[cell])
+                    }
                 if color != runColor {
                     flush()
                     runColor = color

@@ -61,21 +61,22 @@ public struct MotionSensor: Sendable {
                 try sensor.enableReporting(interval: reportInterval)
                 try device.startInputReports(maxLength: IMUReport.length) { report, timestamp in
                     guard let value = IMUReport.decode(report) else { return }
-                    continuation.yield(MotionSample(
-                        kind: kind,
-                        value: value,
-                        timestamp: MachTime.seconds(fromTicks: timestamp)
-                    ))
+                    continuation.yield(
+                        MotionSample(
+                            kind: kind,
+                            value: value,
+                            timestamp: MachTime.seconds(fromTicks: timestamp)
+                        ))
                 }
                 devices.append(device)
             }
         } catch {
-            devices.forEach { $0.cancel() }
+            for device in devices { device.cancel() }
             throw error
         }
 
         continuation.onTermination = { [devices] _ in
-            devices.forEach { $0.cancel() }
+            for device in devices { device.cancel() }
         }
         return stream
     }

@@ -1,9 +1,9 @@
 import Dispatch
 import Foundation
 import GyroKit
-import os
 import Synchronization
 import XPC
+import os
 
 /// Serves IMU readings to clients over XPC. Runs inside the privileged helper.
 public enum MotionServer {
@@ -96,7 +96,8 @@ private final class ClientRegistry: Sendable {
         DispatchQueue.global().asyncAfter(deadline: .now() + delay) { [self] in
             let idle = state.withLock { $0.generation == generation && $0.connected.isEmpty }
             if idle {
-                log.notice("No clients for \(delay, format: .fixed(precision: 0)) s; exiting until launchd needs us again")
+                log.notice(
+                    "No clients for \(delay, format: .fixed(precision: 0)) s; exiting until launchd needs us again")
                 exit(0)
             }
         }

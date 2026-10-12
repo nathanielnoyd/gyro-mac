@@ -66,7 +66,8 @@ public enum SimulatedMotion {
         var rotationRate = Vector3(x: (pitchAhead - pitchBehind) / (2 * h), y: (rollAhead - rollBehind) / (2 * h), z: 0)
 
         // Gravity seen by a device pitched around x and rolled around y; Core Motion convention.
-        let p = pitch.radians, r = roll.radians
+        let p = pitch.radians
+        let r = roll.radians
         var acceleration = Vector3(x: sin(r), y: -sin(p) * cos(r), z: -cos(p) * cos(r))
 
         let local = time.truncatingRemainder(dividingBy: period)
@@ -90,12 +91,13 @@ public enum SimulatedMotion {
     /// Pitch and roll, in degrees: gentle rocking that fades out while the Mac rests on the desk.
     private static func tilt(at time: Double) -> (pitch: Double, roll: Double) {
         let local = time.truncatingRemainder(dividingBy: period)
-        let calm: Double = switch local {
-        case ..<6: 1
-        case ..<7: 1 - smoothStep(local - 6)
-        case ..<23: 0
-        default: smoothStep(local - 23)
-        }
+        let calm: Double =
+            switch local {
+            case ..<6: 1
+            case ..<7: 1 - smoothStep(local - 6)
+            case ..<23: 0
+            default: smoothStep(local - 23)
+            }
         return (20 * sin(time * 0.9) * calm, 10 * sin(time * 0.6) * calm)
     }
 
