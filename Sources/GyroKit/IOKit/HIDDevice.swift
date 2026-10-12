@@ -14,6 +14,8 @@ final class HIDDevice: Sendable {
         case closed, open, streaming, cancelled
     }
 
+    // IOHIDDevice isn't Sendable, but the reference never changes, and every
+    // state transition goes through `state`, so only one caller opens or closes it.
     private nonisolated(unsafe) let device: IOHIDDevice
     private let queue: DispatchQueue
     private let state = Mutex(State.closed)
@@ -84,12 +86,18 @@ final class HIDDevice: Sendable {
 
     /// Stops input report delivery and closes the device. Safe to call more than once.
     func cancel() {
-        let wasStreaming = state.withLock { state in
+        let previous = state.withLock { state in
             defer { state = .cancelled }
-            return state == .streaming
+            return state
         }
-        if wasStreaming {
+        switch previous {
+        case .streaming:
+            // The cancel handler closes the device once delivery has stopped.
             IOHIDDeviceCancel(device)
+        case .open:
+            IOHIDDeviceClose(device, IOOptionBits(kIOHIDOptionsTypeNone))
+        case .closed, .cancelled:
+            break
         }
     }
 }
