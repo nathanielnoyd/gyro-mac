@@ -1,5 +1,6 @@
 import AppKit
 import GyroKit
+import GyroXPC
 import UserNotifications
 import os
 
@@ -113,4 +114,4 @@ enum ActionRunner {
     }
 }
 
-nonisolated private let log = Logger(subsystem: "io.github.nathanielnoyd.gyro", category: "actions")
+nonisolated private let log = Logger(subsystem: HelperService.appBundleIdentifier, category: "actions")

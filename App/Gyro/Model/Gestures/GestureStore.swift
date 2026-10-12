@@ -1,5 +1,6 @@
 import Foundation
 import GyroKit
+import GyroXPC
 import os
 
 /// Keeps gestures, their recordings and calibrations in ~/Library/Application Support/Gyro.
@@ -94,4 +95,4 @@ struct GestureStore {
     }
 }
 
-nonisolated private let log = Logger(subsystem: "io.github.nathanielnoyd.gyro", category: "gestures")
+nonisolated private let log = Logger(subsystem: HelperService.appBundleIdentifier, category: "gestures")
