@@ -50,7 +50,8 @@ Build it from source:
 git clone https://github.com/nathanielnoyd/gyro-mac.git
 cd gyro-mac
 swift build -c release
-sudo cp .build/release/gyro /usr/local/bin/
+sudo install -d /usr/local/bin
+sudo install .build/release/gyro /usr/local/bin/
 ```
 
 ## Usage
@@ -130,7 +131,7 @@ plots the latest event against its ranges, live, which is a good way to explore 
 the sensors can tell apart.
 
 Each gesture can play a sound, show a notification, run a shortcut, open a URL or run
-a shell script (with `$GYRO_GESTURE`, `$GYRO_TAPS` and `$GYRO_STRENGTH_MG` set). Every
+a shell script (with `$GYRO_GESTURE`, `$GYRO_GESTURE_ID`, `$GYRO_TAPS` and `$GYRO_STRENGTH_MG` set). Every
 recognition is also posted as the distributed notification
 `io.github.nathanielnoyd.gyro.gesture`. Actions only run for the real sensors, never
 simulated motion.
@@ -157,7 +158,21 @@ then arrive as HID input reports, about 800 per second from each sensor.
 
 Orientation comes from a [Mahony complementary filter](Sources/GyroKit/Fusion/MahonyFilter.swift).
 It integrates the gyroscope and uses gravity from the accelerometer to correct drift.
-Pitch and roll are absolute. There's no magnetometer, so yaw is relative to where you started. To keep it from drifting, [`GyroBiasEstimator`](Sources/GyroKit/Fusion/GyroBiasEstimator.swift) learns the gyroscope's resting bias whenever the Mac sits still, and orientation holds steady while it does. Press `z` in the dashboard to re-zero yaw.
+Pitch and roll are absolute. There's no magnetometer, so yaw is relative to where you started. To keep it from drifting, [`GyroBiasEstimator`](Sources/GyroKit/Fusion/GyroBiasEstimator.swift) learns the gyroscope's resting bias whenever the Mac sits still, and orientation holds steady while it does. Press `z` in the dashboard, or ⌘0 in the app, to re-zero yaw.
+
+## Concurrency
+
+Everything builds in the Swift 6 language mode, with complete concurrency checking and no
+`@unchecked Sendable`.
+
+- **GyroKit** is nonisolated. Its value types (`MotionTracker`, `MotionEventDetector` and
+  the rest) are plain `Sendable` structs you own and mutate; sensors deliver readings as an
+  `AsyncStream`, and the IOKit wrappers guard their state with `Mutex`.
+- **The app** sets `MainActor` as its default isolation, so its observable models and views
+  need no annotations. A detached task reads the stream into a `Mutex`-guarded
+  `MotionBuffer`, and the main actor takes one frame from it per display refresh.
+- **The helper** keeps each client's session and stream task in a `Mutex`, and sends
+  readings over XPC in batches of 32.
 
 ## Using GyroKit in your own code
 
@@ -186,7 +201,11 @@ Sources/GyroKit/     Sensor access, report decoding and sensor fusion
   Math/              Vector3, Quaternion, Attitude
 Sources/GyroXPC/     The XPC interface between the app and its helper
 Sources/gyro/        The command-line tool
-Tests/GyroKitTests/  Unit tests for decoding, fusion and event detection
+  Commands/          One file per subcommand
+  Dashboard/         The live dashboard's feed, layout and instruments
+  Terminal/          Drawing, styling and input for the terminal
+Tests/GyroKitTests/  Unit tests for decoding, fusion, math and event detection
+Tests/GyroXPCTests/  Tests that the app and helper agree on their protocol
 App/                 The Gyro app (Gyro/) and its privileged helper (GyroHelper/)
 scripts/             Development scripts
 docs/                Images for this README
