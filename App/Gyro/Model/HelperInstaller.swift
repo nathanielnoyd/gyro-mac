@@ -133,6 +133,10 @@ final class HelperInstaller {
 
     /// Runs a shell command as root after macOS asks the user for an administrator password.
     /// Throws if they cancel or the command fails.
+    ///
+    /// SMAppService can't unload a job whose launch constraint macOS has pinned to an older
+    /// binary, so this is the one place the app needs root directly. `command` is always a
+    /// constant, never user input.
     private static func runAsAdministrator(_ command: String) async throws {
         let process = Process()
         process.executableURL = URL(filePath: "/usr/bin/osascript")

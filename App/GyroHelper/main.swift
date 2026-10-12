@@ -32,6 +32,7 @@ private func signingInformation(at url: URL? = nil) -> [String: Any]? {
 
 /// The app this helper was shipped in: launchd runs it from `Gyro.app/Contents/MacOS`.
 nonisolated private var enclosingApp: URL {
+    // Always set for an executable, which the helper is.
     Bundle.main.executableURL!.resolvingSymlinksInPath()
         .deletingLastPathComponent()  // MacOS
         .deletingLastPathComponent()  // Contents
