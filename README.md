@@ -108,34 +108,10 @@ helper has no team to check, so it only accepts the exact app it was shipped ins
 
 ## Gestures
 
-The IMU feels more than tilt. A tap on the palm rest rings the chassis for a few
-tens of milliseconds and tips the Mac by a fraction of a degree; typing is a stream of
-small jolts; a wobbling desk is a slow rumble. GyroKit's `MotionEventDetector` turns
-the readings into two kinds of events:
-
-- **Taps**: up to four quick jolts with quiet before and after, described by their
-  strength, which way the Mac tipped (left or right, front or back), the direction of
-  the first push, how long and how high the chassis rang, and how many there were.
-- **Activity**: a summary of the last 1.5 seconds, four times a second: jolts per
-  second, their strength, overall vibration, how much of it is low rumble, and turning.
-
-A gesture is a range for each of those features. Gyro ships with seven: Tap Left, Tap
-Right, Double Tap, Soft Typing, Hard Typing, Shake the Desk and Pick Up.
-Their starting ranges were measured on one M5 Pro MacBook Pro on one desk, so calibrate
-them for yours: **Motion › Calibrate Gestures…** in the app, or `sudo gyro calibrate`
-in the terminal. Both walk through each gesture in turn (instructions, a countdown,
-then five taps or eight seconds of motion) and refit every gesture to what your Mac,
-desk and hands actually produce. A calibration from the terminal is picked up by the
-app the next time it opens or comes to the front. To add examples to a single gesture,
-pick it in **Motion › Gestures…** (⌘G) and record more; **New Gesture** records your own. Each gesture page
-plots the latest event against its ranges, live, which is a good way to explore what
-the sensors can tell apart.
-
 Each gesture can play a sound, show a notification, run a shortcut, open a URL or run
 a shell script (with `$GYRO_GESTURE`, `$GYRO_GESTURE_ID`, `$GYRO_TAPS` and `$GYRO_STRENGTH_MG` set). Every
 recognition is also posted as the distributed notification
-`io.github.nathanielnoyd.gyro.gesture`. Actions only run for the real sensors, never
-simulated motion.
+`io.github.nathanielnoyd.gyro.gesture`.
 
 Gestures are saved in `~/Library/Application Support/Gyro`, along with each calibration
 (`Calibrations/`) and the raw readings behind every set of examples (`Recordings/`), in
@@ -161,23 +137,10 @@ Orientation comes from a [Mahony complementary filter](Sources/GyroKit/Fusion/Ma
 It integrates the gyroscope and uses gravity from the accelerometer to correct drift.
 Pitch and roll are absolute. There's no magnetometer, so yaw is relative to where you started. To keep it from drifting, [`GyroBiasEstimator`](Sources/GyroKit/Fusion/GyroBiasEstimator.swift) learns the gyroscope's resting bias whenever the Mac sits still, and orientation holds steady while it does. Press `z` in the dashboard, or ⌘0 in the app, to re-zero yaw.
 
-## Concurrency
-
-Everything builds in the Swift 6 language mode, with complete concurrency checking and no
-`@unchecked Sendable`.
-
-- **GyroKit** is nonisolated. Its value types (`MotionTracker`, `MotionEventDetector` and
-  the rest) are plain `Sendable` structs you own and mutate; sensors deliver readings as an
-  `AsyncStream`, and the IOKit wrappers guard their state with `Mutex`.
-- **The app** sets `MainActor` as its default isolation, so its observable models and views
-  need no annotations. A detached task reads the stream into a `Mutex`-guarded
-  `MotionBuffer`, and the main actor takes one frame from it per display refresh.
-- **The helper** keeps each client's session and stream task in a `Mutex`, and sends
-  readings over XPC in batches of 32.
 
 ## Using GyroKit in your own code
 
-The sensor code lives in a separate library you can depend on:
+The sensor code lives in a separate library you can use:
 
 ```swift
 import GyroKit
@@ -220,8 +183,8 @@ To report a security problem, see [SECURITY.md](SECURITY.md).
 
 ## Credits
 
-- [olvvier/apple-silicon-accelerometer](https://github.com/olvvier/apple-silicon-accelerometer) worked out the SPU IMU report format.
-- [samhenrigold/LidAngleSensor](https://github.com/samhenrigold/LidAngleSensor) found the lid angle sensor.
+- [olvvier/apple-silicon-accelerometer](https://github.com/olvvier/apple-silicon-accelerometer) for the SPU IMU report format.
+- [samhenrigold/LidAngleSensor](https://github.com/samhenrigold/LidAngleSensor) for the lid angle sensor.
 
 ## License
 
