@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    name: Check formatting
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v5
+      - name: Lint
+        run: swift format lint --strict --recursive --parallel Sources Tests App
+
+  package:
+    name: Build and test the package
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/cache@v4
+        with:
+          path: .build
+          key: spm-${{ runner.os }}-${{ hashFiles('Package.resolved') }}
+          restore-keys: spm-${{ runner.os }}-
+      - name: Build
+        run: swift build -Xswiftc -warnings-as-errors
+      - name: Test
+        run: swift test -Xswiftc -warnings-as-errors
+
+  app:
+    name: Build the app
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v5
+      - name: Build
+        run: >
+          xcodebuild build
+          -project App/Gyro.xcodeproj
+          -scheme Gyro
+          -configuration Debug
+          -destination 'generic/platform=macOS'
+          -quiet
+          CODE_SIGNING_ALLOWED=NO
+          GYRO_WARNINGS_AS_ERRORS=YES

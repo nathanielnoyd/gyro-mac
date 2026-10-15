@@ -1,0 +1,89 @@
+{
+  "fill": {
+    "linear-gradient": [
+      "display-p3:0.22000,0.48000,1.00000,1.00000",
+      "display-p3:0.08000,0.12000,0.42000,1.00000"
+    ]
+  },
+  "groups": [
+    {
+      "layers": [
+        {
+          "image-name": "gimbal-inner-front.svg",
+          "name": "Inner Gimbal Front",
+          "glass": true
+        }
+      ],
+      "name": "Inner Gimbal Front",
+      "shadow": {
+        "kind": "neutral",
+        "opacity": 0.5
+      },
+      "specular": true,
+      "translucency": {
+        "enabled": true,
+        "value": 0.4
+      }
+    },
+    {
+      "layers": [
+        {
+          "image-name": "rotor.svg",
+          "name": "Rotor",
+          "glass": true
+        }
+      ],
+      "name": "Rotor",
+      "shadow": {
+        "kind": "layer-color",
+        "opacity": 0.5
+      },
+      "specular": true,
+      "translucency": {
+        "enabled": true,
+        "value": 0.2
+      }
+    },
+    {
+      "layers": [
+        {
+          "image-name": "gimbal-outer.svg",
+          "name": "Outer Gimbal",
+          "glass": true
+        }
+      ],
+      "name": "Outer Gimbal",
+      "shadow": {
+        "kind": "neutral",
+        "opacity": 0.5
+      },
+      "specular": true,
+      "translucency": {
+        "enabled": true,
+        "value": 0.4
+      }
+    },
+    {
+      "layers": [
+        {
+          "image-name": "gimbal-inner-back.svg",
+          "name": "Inner Gimbal Back",
+          "glass": true
+        }
+      ],
+      "name": "Inner Gimbal Back",
+      "shadow": {
+        "kind": "neutral",
+        "opacity": 0.5
+      },
+      "specular": true,
+      "translucency": {
+        "enabled": true,
+        "value": 0.4
+      }
+    }
+  ],
+  "supported-platforms": {
+    "squares": "shared"
+  }
+}

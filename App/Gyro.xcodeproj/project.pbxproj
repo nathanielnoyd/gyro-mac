@@ -1,0 +1,384 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0A0000000000000000000019 /* gyro-helper in Embed Helper */ = {isa = PBXBuildFile; fileRef = 0A0000000000000000000007 /* gyro-helper */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		0A000000000000000000001A /* io.github.nathanielnoyd.gyro.helper.plist in Embed Launch Daemon */ = {isa = PBXBuildFile; fileRef = 0A0000000000000000000008 /* io.github.nathanielnoyd.gyro.helper.plist */; };
+		0A000000000000000000001B /* GyroKit in Frameworks */ = {isa = PBXBuildFile; productRef = 0A0000000000000000000021 /* GyroKit */; };
+		0A000000000000000000001C /* GyroXPC in Frameworks */ = {isa = PBXBuildFile; productRef = 0A0000000000000000000022 /* GyroXPC */; };
+		0A000000000000000000001D /* GyroXPC in Frameworks */ = {isa = PBXBuildFile; productRef = 0A0000000000000000000023 /* GyroXPC */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		0A0000000000000000000025 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0A0000000000000000000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 0A0000000000000000000011;
+			remoteInfo = GyroHelper;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		0A0000000000000000000015 /* Embed Helper */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 6;
+			files = (
+				0A0000000000000000000019 /* gyro-helper in Embed Helper */,
+			);
+			name = "Embed Helper";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		0A0000000000000000000016 /* Embed Launch Daemon */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = Contents/Library/LaunchDaemons;
+			dstSubfolderSpec = 1;
+			files = (
+				0A000000000000000000001A /* io.github.nathanielnoyd.gyro.helper.plist in Embed Launch Daemon */,
+			);
+			name = "Embed Launch Daemon";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		0A0000000000000000000006 /* Gyro.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Gyro.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		0A0000000000000000000007 /* gyro-helper */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "gyro-helper"; sourceTree = BUILT_PRODUCTS_DIR; };
+		0A0000000000000000000008 /* io.github.nathanielnoyd.gyro.helper.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = io.github.nathanielnoyd.gyro.helper.plist; sourceTree = "<group>"; };
+		0A0000000000000000000009 /* Base.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Base.xcconfig; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		0A0000000000000000000004 /* Gyro */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Gyro;
+			sourceTree = "<group>";
+		};
+		0A0000000000000000000005 /* GyroHelper */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = GyroHelper;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		0A0000000000000000000013 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0A000000000000000000001B /* GyroKit in Frameworks */,
+				0A000000000000000000001C /* GyroXPC in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		0A0000000000000000000018 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0A000000000000000000001D /* GyroXPC in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		0A0000000000000000000002 = {
+			isa = PBXGroup;
+			children = (
+				0A0000000000000000000004 /* Gyro */,
+				0A0000000000000000000005 /* GyroHelper */,
+				0A000000000000000000000B /* LaunchDaemons */,
+				0A000000000000000000000A /* Config */,
+				0A0000000000000000000003 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		0A0000000000000000000003 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				0A0000000000000000000006 /* Gyro.app */,
+				0A0000000000000000000007 /* gyro-helper */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		0A000000000000000000000A /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				0A0000000000000000000009 /* Base.xcconfig */,
+			);
+			path = Config;
+			sourceTree = "<group>";
+		};
+		0A000000000000000000000B /* LaunchDaemons */ = {
+			isa = PBXGroup;
+			children = (
+				0A0000000000000000000008 /* io.github.nathanielnoyd.gyro.helper.plist */,
+			);
+			path = LaunchDaemons;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		0A0000000000000000000010 /* Gyro */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0A0000000000000000000031 /* Build configuration list for PBXNativeTarget "Gyro" */;
+			buildPhases = (
+				0A0000000000000000000012 /* Sources */,
+				0A0000000000000000000013 /* Frameworks */,
+				0A0000000000000000000014 /* Resources */,
+				0A0000000000000000000015 /* Embed Helper */,
+				0A0000000000000000000016 /* Embed Launch Daemon */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				0A0000000000000000000024 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				0A0000000000000000000004 /* Gyro */,
+			);
+			name = Gyro;
+			packageProductDependencies = (
+				0A0000000000000000000021 /* GyroKit */,
+				0A0000000000000000000022 /* GyroXPC */,
+			);
+			productName = Gyro;
+			productReference = 0A0000000000000000000006 /* Gyro.app */;
+			productType = "com.apple.product-type.application";
+		};
+		0A0000000000000000000011 /* GyroHelper */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0A0000000000000000000032 /* Build configuration list for PBXNativeTarget "GyroHelper" */;
+			buildPhases = (
+				0A0000000000000000000017 /* Sources */,
+				0A0000000000000000000018 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				0A0000000000000000000005 /* GyroHelper */,
+			);
+			name = GyroHelper;
+			packageProductDependencies = (
+				0A0000000000000000000023 /* GyroXPC */,
+			);
+			productName = "gyro-helper";
+			productReference = 0A0000000000000000000007 /* gyro-helper */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		0A0000000000000000000001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 2700;
+				LastUpgradeCheck = 2700;
+			};
+			buildConfigurationList = 0A0000000000000000000030 /* Build configuration list for PBXProject "Gyro" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 0A0000000000000000000002;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				0A0000000000000000000020 /* XCLocalSwiftPackageReference ".." */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 0A0000000000000000000003 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				0A0000000000000000000010 /* Gyro */,
+				0A0000000000000000000011 /* GyroHelper */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		0A0000000000000000000014 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		0A0000000000000000000012 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		0A0000000000000000000017 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		0A0000000000000000000024 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 0A0000000000000000000011 /* GyroHelper */;
+			targetProxy = 0A0000000000000000000025 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		0A0000000000000000000040 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 0A0000000000000000000009 /* Base.xcconfig */;
+			buildSettings = {
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_TESTABILITY = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				ONLY_ACTIVE_ARCH = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		0A0000000000000000000041 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 0A0000000000000000000009 /* Base.xcconfig */;
+			buildSettings = {
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				SWIFT_COMPILATION_MODE = wholemodule;
+			};
+			name = Release;
+		};
+		0A0000000000000000000042 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Gyro;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = io.github.nathanielnoyd.gyro;
+				PRODUCT_NAME = Gyro;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+			};
+			name = Debug;
+		};
+		0A0000000000000000000043 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Gyro;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = io.github.nathanielnoyd.gyro;
+				PRODUCT_NAME = Gyro;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+			};
+			name = Release;
+		};
+		0A0000000000000000000044 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CREATE_INFOPLIST_SECTION_IN_BINARY = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = io.github.nathanielnoyd.gyro.helper;
+				PRODUCT_NAME = "gyro-helper";
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		0A0000000000000000000045 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CREATE_INFOPLIST_SECTION_IN_BINARY = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = io.github.nathanielnoyd.gyro.helper;
+				PRODUCT_NAME = "gyro-helper";
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		0A0000000000000000000030 /* Build configuration list for PBXProject "Gyro" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0A0000000000000000000040 /* Debug */,
+				0A0000000000000000000041 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		0A0000000000000000000031 /* Build configuration list for PBXNativeTarget "Gyro" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0A0000000000000000000042 /* Debug */,
+				0A0000000000000000000043 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		0A0000000000000000000032 /* Build configuration list for PBXNativeTarget "GyroHelper" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0A0000000000000000000044 /* Debug */,
+				0A0000000000000000000045 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		0A0000000000000000000020 /* XCLocalSwiftPackageReference ".." */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ..;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		0A0000000000000000000021 /* GyroKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = GyroKit;
+		};
+		0A0000000000000000000022 /* GyroXPC */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = GyroXPC;
+		};
+		0A0000000000000000000023 /* GyroXPC */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = GyroXPC;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 0A0000000000000000000001 /* Project object */;
+}
